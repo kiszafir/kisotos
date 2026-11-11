@@ -8,6 +8,8 @@
 
   A.init = function (state) {
     A.S = state || KO.store.load();
+    /* Régebbi mentés: az egyetemi ösvény azóta három részre bomlott. */
+    if (A.S.profile && !KO.tracks[A.S.profile.track]) A.S.profile.track = A.S.profile.track === 'egyetem' ? 'egyetem1' : 'erettsegi';
     A.ui = { screen: A.S.profile ? 'ma' : 'kezdes', topic: null, sess: null, sum: null, toast: '', confirmReset: false, fields: {} };
   };
   function save() { KO.store.save(A.S); }
@@ -80,7 +82,9 @@
       '<button type="button" class="pick" data-act="profil" data-arg="tortek"><strong>5–8. osztály</strong><span>Ösvény lépésről lépésre, magyarázattal.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="erettsegi"><strong>Érettségire készülök</strong><span>Középszint: sűrűbb felület, pontok, tudástérkép.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="emelt"><strong>Emelt szintű érettségi</strong><span>Számelmélet, feltételes valószínűség, analízis alapjai.</span></button>' +
-      '<button type="button" class="pick" data-act="profil" data-arg="egyetem"><strong>Egyetemista vagyok</strong><span>Határérték, deriválás, integrál, mátrixok, komplex számok.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="egyetem1"><strong>Egyetem: Matek 1</strong><span>Diszkrét matematika és analízis: halmazok, komplex számok, határérték, deriválás, integrál.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="egyetem2"><strong>Egyetem: Matek 2</strong><span>Lineáris algebra és többváltozós analízis: mátrixok, sajátérték, gradiens, kettős integrál.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="egyetem3"><strong>Egyetem: Matek 3</strong><span>Valószínűségszámítás, statisztika és operációkutatás.</span></button>' +
       '<p class="note">Nem kérünk nevet, e-mail-címet vagy fiókot. A haladásod csak ezen az eszközön tárolódik.</p></div>';
   };
 
@@ -262,7 +266,7 @@
     var st = A.S.settings, p = A.S.profile.track;
     function seg(label, act, arg, on) { return '<button type="button" class="seg-btn' + (on ? ' on' : '') + '" data-act="' + act + '" data-arg="' + arg + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + label + '</button>'; }
     var h = '<div class="stack"><h1>Beállítások</h1>' +
-      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Emelt', 'profil', 'emelt', p === 'emelt') + seg('Egyetem', 'profil', 'egyetem', p === 'egyetem') + '</div>' +
+      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Emelt', 'profil', 'emelt', p === 'emelt') + seg('Matek 1', 'profil', 'egyetem1', p === 'egyetem1') + seg('Matek 2', 'profil', 'egyetem2', p === 'egyetem2') + seg('Matek 3', 'profil', 'egyetem3', p === 'egyetem3') + '</div>' +
       '<p class="muted small">Váltáskor a haladásod megmarad.</p></div>' +
       '<div class="card"><div class="eyebrow">Megjelenés</div><div class="seg-row">' + seg('Automatikus', 'tema', 'auto', st.theme === 'auto') + seg('Fehér', 'tema', 'light', st.theme === 'light') + seg('Fekete', 'tema', 'dark', st.theme === 'dark') + '</div>' +
       '<div class="seg-row">' + seg('Kevesebb zsúfoltság: ' + (st.calm ? 'be' : 'ki'), 'calm', '', st.calm) + seg('Felolvasás gomb: ' + (st.voice ? 'be' : 'ki'), 'hang', '', st.voice) + '</div>' +
