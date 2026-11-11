@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -134,6 +134,26 @@ var verify = {
   szelsoertek: function (t) { var d = t.data, f = function (x) { return x * x * x - 3 * d.p * d.p * x + d.c; }, x = t.answer; return f(x - 0.01) > f(x) && f(x + 0.01) > f(x); },
   skalar: function (t) { var d = t.data, s = 0; for (var i = 0; i < 3; i++) s += d.a[i] * d.b[i]; return s === t.answer; },
   inverz: function (t) { var m = t.data.m, det = m[0][0] * m[1][1] - m[0][1] * m[1][0], x = t.data.top ? [0, 1] : [1, 0]; /* M · X = I megoldása */ var col = t.data.top ? 1 : 0, rhs = [col === 0 ? 1 : 0, col === 1 ? 1 : 0], sol0 = (rhs[0] * m[1][1] - m[0][1] * rhs[1]) / det, sol1 = (m[0][0] * rhs[1] - rhs[0] * m[1][0]) / det; return det === 1 && (t.data.top ? sol0 : sol1) === t.answer && x.length === 2; },
+  hasonlit: function (t) { var d = t.data, diff = d.a - d.b; return (diff < 0 ? /^kisebb/ : diff > 0 ? /^nagyobb/ : /^egyenlő/).test(t.answer); },
+  szamsor: function (t) { var x = t.data.t; return x[1] - x[0] === x[2] - x[1] && x[3] - x[2] === t.answer - x[3]; },
+  ketjegyukivon: function (t) { return t.answer + t.data.b === t.data.a; },
+  maradek: function (t) { var n = t.data.N; while (n >= t.data.d) n -= t.data.d; return n === t.answer; },
+  kerekszorzas: function (t) { var s = 0; for (var i = 0; i < t.data.b; i++) s += t.data.a; return s === t.answer; },
+  prim: function (t) { var n = t.data.n, c = 0; for (var k = 1; k <= n; k++) if (n % k === 0) c++; return (c === 2) === (t.answer === 'prímszám'); },
+  tortresz: function (t) { var d = t.data; return t.answer * d.q === d.p * d.N; },
+  atlag3: function (t) { var x = t.data.x; return t.answer * 3 === x[0] + x[1] + x[2]; },
+  egyenesarany: function (t) { var d = t.data; return t.answer * d.a === d.u * d.a * d.b; },
+  haromszogszog: function (t) { return t.answer + t.data.al + t.data.be === 180 && t.answer > 0; },
+  egyenletzarojel: function (t) { var d = t.data; return d.a * (t.answer + d.b) === d.c; },
+  azonossag: function (t) { var a = t.data.a; return [1, 2, -3].every(function (x) { return (x + a) * (x + a) === x * x + t.answer * x + a * a; }); },
+  egyenes: function (t) { var d = t.data; return d.m * d.x1 + t.answer === d.y1 && d.m * d.x2 + t.answer === d.y2; },
+  szazaleklanc: function (t) { var d = t.data, v = d.N; v = v * (100 + d.p) / 100; v = v * (100 - d.p) / 100; return v === t.answer; },
+  henger: function (t) { var d = t.data, c = 0; for (var i = 0; i < d.h; i++) c += d.r * d.r; return c === t.answer; },
+  fuggetlen: function (t) { var fav = 0, c = t.data.c, good = { 1: [6], 2: [5, 6], 3: [2, 4, 6], 4: [3, 4, 5, 6] }[c]; ['F', 'I'].forEach(function (coin) { for (var k = 1; k <= 6; k++) if (coin === 'F' && good.indexOf(k) >= 0) fav++; }); return t.answer.n * 12 === fav * t.answer.d && reduced(t.answer); },
+  lhopital: function (t) { var a = t.data.a, x = a + 1e-6; return Math.abs((x * x - a * a) / (x - a) - t.answer) < 1e-4; },
+  masodderivalt: function (t) { var d = t.data, f = function (x) { return d.a * x * x * x + d.b * x * x + d.c * x; }; return f(d.x0 + 1) - 2 * f(d.x0) + f(d.x0 - 1) === t.answer; },
+  kereszt: function (t) { var a = t.data.a, b = t.data.b, c = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], t.answer]; return c[0] * a[0] + c[1] * a[1] + c[2] * a[2] === 0 && c[0] * b[0] + c[1] * b[1] + c[2] * b[2] === 0; },
+  varhato: function (t) { var d = t.data, e = 0, ps = 0; for (var i = 0; i < 3; i++) { e += d.v[i] * d.c[i] / d.d; ps += d.c[i]; } return Math.abs(e - t.answer) < 1e-9 && ps === d.d; },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
@@ -235,6 +255,9 @@ function view(tag) {
   ['ma', 'osveny', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s); });
   KO.tracks[trk].ids.forEach(function (id, n) {
     A.act('lecke', id); view(trk + ' lecke ' + id);
+    for (var ds = 0; ds < 3; ds++) { A.act('demo-lep'); view(trk + ' lecke-példa ' + id); }
+    ok(/Gyakori hiba/.test(A.view()), id + ': a lecke végén megjelenik a gyakori hiba');
+    A.act('demo-uj'); ok(A.ui.demo.step === 0, id + ': új példa az elejéről indul'); view(trk + ' lecke-új példa ' + id);
     for (var round = 0; round < 3; round++) {
       A.act('gyak', id);
       var guard = 0;

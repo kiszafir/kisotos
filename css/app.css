@@ -117,6 +117,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .node.lock .node-name { color: var(--ink2); }
 .node-name { font-family: var(--head); font-weight: 800; font-size: 1.05em; }
 
+.demo { border: 2px solid var(--acc-t); }
+
 /* Feladat */
 .prog { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .segs { display: flex; gap: 5px; }

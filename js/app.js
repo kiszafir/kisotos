@@ -129,8 +129,29 @@
       else if (b.t === 'steps') h += '<div class="card"><div class="eyebrow">' + esc(b.h) + '</div><div class="math">' + M(b.math) + '</div><ol class="steps">' + b.s.map(function (s) { return '<li>' + M(s) + '</li>'; }).join('') + '</ol></div>';
       else if (b.t === 'warn') h += '<div><span class="hand">Figyelj!</span><ul class="steps">' + b.s.map(function (s) { return '<li>' + M(s) + '</li>'; }).join('') + '</ul></div>';
     });
+    if (!A.ui.demo || A.ui.demo.topic !== id) newDemo(id, true);
+    var d = A.ui.demo, t = d.task;
+    h += '<div class="card demo"><div class="eyebrow">Példa lépésről lépésre</div><p>' + M(t.prompt) + '</p>' + (t.math ? '<div class="math">' + M(t.math) + '</div>' : '') + KO.figure(t.fig);
+    if (d.step === 0) h += '<p class="muted small">Próbáld meg előbb fejben, aztán nézd meg a lépéseket egyenként.</p>';
+    else h += '<ol class="steps">' + t.tips.slice(0, d.step).map(function (x) { return '<li>' + M(x) + '</li>'; }).join('') + '</ol>';
+    if (d.step >= 3) {
+      var w = t.wrongs[0];
+      h += '<p><strong>Válasz:</strong> ' + M(KO.show(t.answer, t.vtype)) + '</p>' +
+        '<div class="fb err"><div class="fb-head">' + icon('warn', 22) + '<span>Gyakori hiba</span></div><p>Sokan ezt válaszolják: <strong>' + M(KO.show(w.v, t.vtype)) + '</strong>. ' + M(w.fb) + '</p></div>';
+    }
+    h += '<div class="btn-row">' + (d.step < 3 ? btn(d.step === 0 ? 'Mutasd az első lépést' : 'Következő lépés', 'demo-lep', null, 'primary') : '') + btn('Másik példa', 'demo-uj', null, 'ghost') + '</div></div>';
+    if (tp.pre.length) {
+      h += '<div class="card"><div class="eyebrow">Erre épül</div><p class="muted small">Ha valami nem világos, előbb ezeket nézd át.</p><div class="btn-row">' +
+        tp.pre.map(function (p) { return btn(esc(KO.topics[p].name), 'lecke', p, 'ghost'); }).join('') + '</div></div>';
+    }
     return h + btn('Jöhet a gyakorlás', 'gyak', id, 'primary big') + '</div>';
   };
+
+  function newDemo(id, reset) {
+    var gens = KO.gensOf(id).sort(function (a, b) { return a.level - b.level; });
+    var n = !reset && A.ui.demo && A.ui.demo.topic === id ? A.ui.demo.n + 1 : 0;
+    A.ui.demo = { topic: id, n: n, step: 0, task: KO.make(gens[n % gens.length].id, A.S.seed++) };
+  }
 
   function kindOf(task) { return mood() === 'felfedezo' ? 'choice' : task.kind; }
 
@@ -351,7 +372,9 @@
       var r = rec();
       if (!tstate(r.id).seen) ACT.lecke(r.id); else startRound(r.id);
     },
-    lecke: function (id) { A.ui.topic = id; A.ui.screen = 'lecke'; tstate(id).seen = true; save(); },
+    lecke: function (id) { A.ui.topic = id; A.ui.screen = 'lecke'; tstate(id).seen = true; newDemo(id, true); save(); },
+    'demo-lep': function () { if (A.ui.demo && A.ui.demo.step < 3) A.ui.demo.step++; },
+    'demo-uj': function () { newDemo(A.ui.topic, false); save(); },
     gyak: function (id) { tstate(id).seen = true; startRound(id); },
     valaszt: function (arg) {
       var s = A.ui.sess;
