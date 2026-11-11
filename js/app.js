@@ -78,7 +78,8 @@
       '<p class="muted">Ez alapján állítjuk be a betűméretet, a feladatokat és a felületet. Később bármikor átváltható.</p>' +
       '<button type="button" class="pick" data-act="profil" data-arg="also"><strong>1–4. osztály</strong><span>Nagy gombok, rövid körök, Paca segít.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="tortek"><strong>5–8. osztály</strong><span>Ösvény lépésről lépésre, magyarázattal.</span></button>' +
-      '<button type="button" class="pick" data-act="profil" data-arg="erettsegi"><strong>Érettségire készülök</strong><span>Sűrűbb felület, pontok, tudástérkép.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="erettsegi"><strong>Érettségire készülök</strong><span>Középszint: sűrűbb felület, pontok, tudástérkép.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="emelt"><strong>Emelt szintű érettségi</strong><span>Számelmélet, feltételes valószínűség, analízis alapjai.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="egyetem"><strong>Egyetemista vagyok</strong><span>Határérték, deriválás, integrál, mátrixok, komplex számok.</span></button>' +
       '<p class="note">Nem kérünk nevet, e-mail-címet vagy fiókot. A haladásod csak ezen az eszközön tárolódik.</p></div>';
   };
@@ -96,7 +97,7 @@
       h += '<h1>Ma</h1><div class="card row">' + ring(done, GOAL) + '<div><div class="eyebrow">Napi cél</div><div class="strong">' +
         (done >= GOAL ? 'A mai cél megvan.' : done + ' feladat kész, a cél ' + GOAL + '.') + '</div><div class="muted small">Egy kör ' + ROUND + ' feladat.</div></div></div>' +
         btn('Folytatom' + icon('go', 20), 'folytat', null, 'primary big') + '<p class="muted">' + recText(r) + '</p>';
-      if (A.S.profile.track === 'erettsegi') {
+      if (A.S.profile.track === 'erettsegi' || A.S.profile.track === 'emelt') {
         var ex = A.S.settings.examDate, days = ex ? Math.ceil((new Date(ex + 'T08:00:00').getTime() - A.now()) / KO.DAY) : null;
         h += '<div class="card dashed"><div class="eyebrow">Visszaszámlálás</div>' +
           (ex && days >= 0 ? '<div class="strong">' + days + ' nap az érettségidig</div><div class="muted small">A napot te adtad meg. A hivatalos időpontot az Oktatási Hivatal oldalán ellenőrizd.</div>'
@@ -261,12 +262,12 @@
     var st = A.S.settings, p = A.S.profile.track;
     function seg(label, act, arg, on) { return '<button type="button" class="seg-btn' + (on ? ' on' : '') + '" data-act="' + act + '" data-arg="' + arg + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + label + '</button>'; }
     var h = '<div class="stack"><h1>Beállítások</h1>' +
-      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Egyetem', 'profil', 'egyetem', p === 'egyetem') + '</div>' +
+      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Emelt', 'profil', 'emelt', p === 'emelt') + seg('Egyetem', 'profil', 'egyetem', p === 'egyetem') + '</div>' +
       '<p class="muted small">Váltáskor a haladásod megmarad.</p></div>' +
       '<div class="card"><div class="eyebrow">Megjelenés</div><div class="seg-row">' + seg('Automatikus', 'tema', 'auto', st.theme === 'auto') + seg('Fehér', 'tema', 'light', st.theme === 'light') + seg('Fekete', 'tema', 'dark', st.theme === 'dark') + '</div>' +
       '<div class="seg-row">' + seg('Kevesebb zsúfoltság: ' + (st.calm ? 'be' : 'ki'), 'calm', '', st.calm) + seg('Felolvasás gomb: ' + (st.voice ? 'be' : 'ki'), 'hang', '', st.voice) + '</div>' +
       '<p class="muted small">A „kevesebb zsúfoltság” nagyobb betűt és nyugodtabb felületet ad. Ez csak beállítás.</p></div>';
-    if (p === 'erettsegi') {
+    if (p === 'erettsegi' || p === 'emelt') {
       h += '<div class="card"><label class="eyebrow" for="f-ex">Mikor érettségizel matekból?</label><div class="btn-row"><input id="f-ex" class="date-in" type="date" data-field="examDate" value="' + esc(st.examDate || '') + '">' + btn('Mentés', 'vizsga', null, 'ghost') + '</div>' +
         '<p class="muted small">A hivatalos időpontot az Oktatási Hivatal oldalán nézd meg. Az app nem tudja fejből.</p></div>';
     }
