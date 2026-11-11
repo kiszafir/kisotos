@@ -162,9 +162,15 @@
       if (m !== null && m < 75 && (st.due || 0) <= now && m < dueM) { dueM = m; due = id; }
     }
     if (due) return { id: due, why: 'gyenge' };
+    /* Új témának azt ajánljuk, amelynek az ösvényen belüli előzményeit már tanulta; ha nincs ilyen, az elsőt. */
+    var firstNew = null;
+    function fresh(t) { return KO.mastery((state.topics[t] || {}).hist) === null; }
     for (i = 0; i < ids.length; i++) {
-      if (KO.mastery((state.topics[ids[i]] || {}).hist) === null) return { id: ids[i], why: 'uj' };
+      if (!fresh(ids[i])) continue;
+      if (firstNew === null) firstNew = ids[i];
+      if (topics[ids[i]].pre.every(function (p) { return ids.indexOf(p) < 0 || !fresh(p); })) return { id: ids[i], why: 'uj' };
     }
+    if (firstNew !== null) return { id: firstNew, why: 'uj' };
     var rep = null, repDue = Infinity;
     for (i = 0; i < ids.length; i++) {
       st = state.topics[ids[i]];

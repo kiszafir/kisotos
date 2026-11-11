@@ -212,6 +212,18 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .g-cols, .g-left, .g-right { display: flex; flex-direction: column; gap: var(--gap); }
 
 /* Asztali nézet: oldalsó menü, széles tartalom, többhasábos elrendezés */
+/* Témakörök az ösvényen */
+.grp { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+.grp.here { border-color: var(--acc-t); }
+.grp-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; background: none; border: 0; color: var(--ink); font: inherit; text-align: left; cursor: pointer; border-radius: var(--radius); }
+.grp-num { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; background: var(--acc-bg); color: var(--acc-t); font-family: var(--head); font-weight: 800; }
+.grp-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.grp-name { font-family: var(--head); font-weight: 800; font-size: 1.1em; }
+.grp-sub { color: var(--ink2); font-size: .875em; }
+.grp-bar { height: 6px; }
+.grp-chev { color: var(--ink2); display: flex; }
+.grp > .path { padding: 4px 14px 2px; border-top: 1px solid var(--line); padding-top: 14px; }
+
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }

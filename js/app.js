@@ -33,6 +33,8 @@
     warn: 'M12 8v5M12 17h.01M12 3l9.5 17h-19z',
     bulb: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
     lock: 'M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',
+    down: 'M6 9l6 6 6-6',
+    up: 'M6 15l6-6 6 6',
     moon: 'M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z',
     sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5'
   };
@@ -111,18 +113,36 @@
     return h + '</div>';
   };
 
+  function groupsOf(t) { return t.groups || [{ name: t.name, ids: t.ids }]; }
+  function nodeHtml(id, r) {
+    var tp = KO.topics[id], m = mast(id), weak = tp.pre.filter(function (p) { var pm = mast(p); return pm === null || pm < 50; });
+    var st = m !== null && m >= 75 ? 'done' : id === r.id ? 'cur' : (m === null && weak.length ? 'lock' : 'open');
+    var sub = st === 'lock' ? 'Előbb ajánlott: ' + weak.map(function (p) { return esc(KO.topics[p].name); }).join(', ')
+      : m === null ? 'Új téma' : 'Szint: ' + KO.label(m) + ' · ' + m;
+    return '<li class="node ' + st + '"><div class="node-rail"><span class="node-dot">' + (st === 'done' ? icon('ok', 18) : st === 'lock' ? icon('lock', 16) : '<i></i>') + '</span><span class="node-line"></span></div>' +
+      '<div class="node-card"><div class="node-name">' + esc(tp.name) + '</div><div class="muted small">' + (st === 'cur' ? 'Itt tartasz. ' : '') + sub + '</div>' +
+      '<div class="btn-row">' + btn(st === 'lock' ? 'Mégis megnézem' : 'Lecke', 'lecke', id, st === 'cur' ? 'primary' : 'ghost') + (st === 'lock' ? '' : btn('Gyakorlás', 'gyak', id, 'ghost')) + '</div></div></li>';
+  }
+
   V.osveny = function () {
-    var t = track(), r = rec(), h = '<div class="stack"><div><h1>' + esc(t.name) + '</h1><p class="muted">Minden állomás az előzőkre épül. Ha elakadsz, visszalépünk oda, ahol a gond kezdődött.</p></div><ol class="path">';
-    t.ids.forEach(function (id) {
-      var tp = KO.topics[id], m = mast(id), weak = tp.pre.filter(function (p) { var pm = mast(p); return pm === null || pm < 50; });
-      var st = m !== null && m >= 75 ? 'done' : id === r.id ? 'cur' : (m === null && weak.length ? 'lock' : 'open');
-      var sub = st === 'lock' ? 'Előbb ajánlott: ' + weak.map(function (p) { return esc(KO.topics[p].name); }).join(', ')
-        : m === null ? 'Új téma' : 'Szint: ' + KO.label(m) + ' · ' + m;
-      h += '<li class="node ' + st + '"><div class="node-rail"><span class="node-dot">' + (st === 'done' ? icon('ok', 18) : st === 'lock' ? icon('lock', 16) : '<i></i>') + '</span><span class="node-line"></span></div>' +
-        '<div class="node-card"><div class="node-name">' + esc(tp.name) + '</div><div class="muted small">' + (st === 'cur' ? 'Itt tartasz. ' : '') + sub + '</div>' +
-        '<div class="btn-row">' + btn(st === 'lock' ? 'Mégis megnézem' : 'Lecke', 'lecke', id, st === 'cur' ? 'primary' : 'ghost') + (st === 'lock' ? '' : btn('Gyakorlás', 'gyak', id, 'ghost')) + '</div></div></li>';
+    var t = track(), r = rec(), gs = groupsOf(t), key = A.S.profile.track;
+    if (A.ui.grpTrack !== key) {
+      A.ui.grpTrack = key; A.ui.grp = 0;
+      gs.forEach(function (g, i) { if (g.ids.indexOf(r.id) >= 0) A.ui.grp = i; });
+    }
+    var h = '<div class="stack"><div><h1>' + esc(t.name) + '</h1><p class="muted">' + gs.length + ' témakör, ' + t.ids.length + ' téma. Koppints egy témakörre, és megnyílnak a témái.</p></div>';
+    gs.forEach(function (g, i) {
+      var open = A.ui.grp === i, done = g.ids.filter(function (id) { var m = mast(id); return m !== null && m >= 75; }).length;
+      var here = g.ids.indexOf(r.id) >= 0;
+      h += '<div class="grp' + (open ? ' open' : '') + (here ? ' here' : '') + '"><button type="button" class="grp-head" data-act="csoport" data-arg="' + i + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+        '<span class="grp-num">' + (i + 1) + '</span><span class="grp-text"><span class="grp-name">' + esc(g.name) + '</span>' +
+        '<span class="grp-sub">' + g.ids.length + ' téma · ' + done + ' erős' + (here ? ' · itt tartasz' : '') + '</span>' +
+        '<span class="bar grp-bar" role="img" aria-label="' + done + ' erős a ' + g.ids.length + ' témából"><span class="bar-fill ok" style="width: ' + Math.round(100 * done / g.ids.length) + '%"></span></span></span>' +
+        '<span class="grp-chev" aria-hidden="true">' + icon(open ? 'up' : 'down', 20) + '</span></button>';
+      if (open) h += '<ol class="path">' + g.ids.map(function (id) { return nodeHtml(id, r); }).join('') + '</ol>';
+      h += '</div>';
     });
-    return h + '</ol></div>';
+    return h + '</div>';
   };
 
   V.lecke = function () {
@@ -251,7 +271,7 @@
     });
     if (!any) h += '<p class="muted">Még nincs adat. Oldj meg egy kört, és itt megjelenik, mi megy már, és mit érdemes gyakorolni.</p>';
     else h += '<div class="rule"><div class="eyebrow">Most ezt gyakorold</div><p>' + recText(rec()) + '</p>' + btn('Gyakorlom', 'folytat', null, 'primary') + '</div>';
-    h += '<div class="card">' + t.ids.map(levelRow).join('') + '</div>';
+    groupsOf(t).forEach(function (g) { h += '<div class="card"><div class="eyebrow">' + esc(g.name) + '</div>' + g.ids.map(levelRow).join('') + '</div>'; });
     var top = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 3);
     if (top.length) {
       var topCat = Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; })[0];
@@ -372,7 +392,8 @@
       A.S.profile = { track: arg, mood: KO.tracks[arg].mood };
       A.ui.screen = 'ma'; A.ui.sess = null; save();
     },
-    nav: function (arg) { A.ui.screen = arg; A.ui.confirmReset = false; },
+    nav: function (arg) { if (arg === 'osveny' && A.ui.screen !== 'osveny') A.ui.grpTrack = null; A.ui.screen = arg; A.ui.confirmReset = false; },
+    csoport: function (arg) { var i = Number(arg); A.ui.grp = A.ui.grp === i ? -1 : i; },
     folytat: function () {
       var r = rec();
       if (!tstate(r.id).seen) ACT.lecke(r.id); else startRound(r.id);
