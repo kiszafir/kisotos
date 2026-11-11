@@ -141,8 +141,8 @@
     h += '<div class="prog"><span class="strong">' + (s.i + 1) + '. feladat</span><span class="segs" role="img" aria-label="' + (s.i + 1) + '. feladat, összesen ' + s.ids.length + '">' + segs + '</span></div>';
     if (mood() === 'fokusz') h += '<div class="chips"><span class="chip">' + t.points + ' pont</span><span class="chip">kb. ' + t.minutes + ' perc</span><span class="chip">nehézség: ' + t.level + ' / 5</span></div>';
     var fig = t.fig && t.fig.type === 'tenframe' && (s.tips >= 2 || s.state !== 'open') ? Object.assign({}, t.fig, { moved: true }) : t.fig;
-    h += '<div class="card task"><p class="prompt">' + M(t.prompt) + '</p>' + (t.math ? '<div class="math big">' + M(t.math) + '</div>' : '') + KO.figure(fig) +
-      (A.S.settings.voice ? '<button type="button" class="icon-btn say" data-act="felolvas" aria-label="Felolvasom a feladatot">' + icon('say', 24) + '</button>' : '') + '</div>';
+    h += '<div class="g-cols"><div class="g-left"><div class="card task"><p class="prompt">' + M(t.prompt) + '</p>' + (t.math ? '<div class="math big">' + M(t.math) + '</div>' : '') + KO.figure(fig) +
+      (A.S.settings.voice ? '<button type="button" class="icon-btn say" data-act="felolvas" aria-label="Felolvasom a feladatot">' + icon('say', 24) + '</button>' : '') + '</div></div><div class="g-right">';
 
     if (kind === 'choice') {
       h += '<div class="opts' + (t.vtype === 'text' ? ' col' : '') + '" role="group" aria-label="Válaszlehetőségek">';
@@ -194,7 +194,7 @@
     }
     h += '<div class="foot"><span class="muted small">Programmal generált és ellenőrzött feladat.</span>' +
       (s.reported ? '<span class="muted small">Köszi, feljegyeztük.</span>' : '<button type="button" class="link" data-act="jelent">Hibát találtam</button>') + '</div>';
-    return h + '</div>';
+    return h + '</div></div></div>';
   };
 
   V.osszegzes = function () {

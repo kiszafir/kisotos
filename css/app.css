@@ -207,26 +207,53 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 @media (min-width: 600px) { .app { border-left: 1px solid var(--line); border-right: 1px solid var(--line); } }
 @media (prefers-color-scheme: dark) { body { background: #000; } }
 
+.g-cols, .g-left, .g-right { display: flex; flex-direction: column; gap: var(--gap); }
+
 /* Asztali nézet: oldalsó menü, széles tartalom, többhasábos elrendezés */
 @media (min-width: 900px) {
-  .app { max-width: none; border: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
+  .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }
-  .top { grid-column: 1 / -1; padding: 12px 32px; }
+  .top { grid-column: 1 / -1; padding: 12px 28px; }
   .logo { width: 36px; height: 36px; font-size: 30px; }
-  .nav { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 4px; padding: 20px 14px; border-top: 0; border-right: 1px solid var(--line); }
-  .tab { flex-direction: row; justify-content: flex-start; gap: 12px; min-height: 48px; padding: 0 14px; border-top: 0; border-radius: var(--radius); font-size: 1em; }
+  .brand-name { font-size: 1.4em; }
+  .nav { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 6px; padding: 24px 16px; border-top: 0; border-right: 1px solid var(--line); }
+  .tab { flex-direction: row; justify-content: flex-start; gap: 14px; min-height: 50px; padding: 0 16px; border-top: 0; border-radius: var(--radius); font-size: 1.02em; }
   .tab.cur { background: var(--acc-bg); border-top: 0; }
-  .main { grid-column: 2; grid-row: 2; padding: 36px 48px 56px; }
+  .tab:hover { background: var(--acc-bg); }
+  .main { grid-column: 2; grid-row: 2; padding: 40px 56px 64px; }
   .app.no-nav .main { grid-column: 1 / -1; }
-  .main > .stack { max-width: 1080px; margin: 0 auto; }
-  .main.scr-gyak > .stack, .main.scr-osszegzes > .stack, .main.scr-osveny > .stack, .mood-felfedezo .main.scr-ma > .stack { max-width: 760px; }
-  .main.scr-kezdes > .stack, .main.scr-lecke > .stack, .main.scr-terkep > .stack, .main.scr-beall > .stack, .main.scr-ma > .stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-  .mood-felfedezo .main.scr-ma > .stack { display: flex; }
-  .main > .stack > h1, .main > .stack > .note, .main > .stack > .rule, .main.scr-lecke > .stack > .btn, .main.scr-kezdes > .stack > p, .main.scr-terkep > .stack > p { grid-column: 1 / -1; }
-  .main.scr-lecke > .stack > .rule { grid-column: auto; }
-  .main.scr-lecke > .stack > .btn { justify-self: start; min-width: 320px; }
-  .main.scr-ma > .stack > .btn { align-self: stretch; }
-  .pick { min-height: 110px; padding: 22px; }
+  .main > .stack { max-width: 1120px; margin: 0 auto; }
   h1 { font-size: 2.1em; }
+  .btn, .opt, .pick, .seg-btn, .icon-btn { transition: background-color .15s, border-color .15s; }
+  .btn.ghost:hover, .opt:not(:disabled):hover, .pick:hover, .seg-btn:hover { background: var(--acc-bg); border-color: var(--acc-t); }
+
+  /* Kezdés: középre zárt, két hasáb */
+  .main.scr-kezdes > .stack { max-width: 880px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: 4vh; }
+  .main.scr-kezdes > .stack > h1, .main.scr-kezdes > .stack > p { grid-column: 1 / -1; }
+  .pick { min-height: 120px; padding: 24px; justify-content: center; }
+
+  /* Ma: két hasáb */
+  .main.scr-ma > .stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+  .main.scr-ma > .stack > h1 { grid-column: 1 / -1; }
+  .mood-felfedezo .main.scr-ma > .stack { display: flex; max-width: 760px; }
+
+  /* Ösvény: két hasábban az állomások */
+  .main.scr-osveny .path { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+  .main.scr-osveny .node-line { visibility: hidden; }
+
+  /* Lecke és beállítások: hézagmentes hasábok */
+  .main.scr-lecke > .stack, .main.scr-beall > .stack, .main.scr-terkep > .stack { display: block; columns: 2; column-gap: 28px; }
+  .main.scr-lecke > .stack > *, .main.scr-beall > .stack > *, .main.scr-terkep > .stack > * { break-inside: avoid; margin: 0 0 var(--gap); }
+  .main.scr-lecke > .stack > h1, .main.scr-beall > .stack > h1, .main.scr-terkep > .stack > h1, .main.scr-terkep > .stack > .rule, .main.scr-terkep > .stack > p, .main.scr-beall > .stack > .note { column-span: all; }
+  .main.scr-lecke > .stack > .btn { display: flex; width: 100%; }
+
+  /* Gyakorlás: bal oldalt a feladat, jobb oldalt a válasz */
+  .main.scr-gyak > .stack { max-width: 1120px; }
+  .g-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; align-items: start; }
+  .g-left { position: sticky; top: 0; }
+  .task { padding: 22px 24px; }
+  .mood-felfedezo .g-cols { grid-template-columns: minmax(0, 1fr); max-width: 760px; margin: 0 auto; width: 100%; }
+  .mood-felfedezo .g-left { position: static; }
+  .main.scr-osszegzes > .stack { max-width: 760px; }
   .opts { gap: 14px; }
 }

@@ -16,20 +16,20 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Három hangulat (Felfedező, Tanuló, Fókusz), fehér és fekete mód (a fejlécben egy gombbal váltható), „kevesebb zsúfoltság” mód | kész |
 | Ma, Ösvény, Lecke, Gyakorlás, Tudástérkép, Beállítások képernyő | kész |
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
-| 53 téma leckével, 79 feladatgenerátor (minden feladat új számokkal jön) | kész |
+| 67 téma leckével, 93 feladatgenerátor (minden feladat új számokkal jön) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
-| Javítás hibatípus szerint (78 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
+| Javítás hibatípus szerint (86 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
 | Tudásszint témánként, térköz-ismétlés, gyökérok-keresés az előfeltételek között, ajánló | kész |
 | Felolvasás gomb (a böngésző magyar hangjával, ha van) | kész |
 | Hibajelentés: a feladat azonosítója helyben tárolódik, a Beállításokból kimásolható | kész |
-| Automatikus tesztek: 31 600 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
+| Automatikus tesztek: 37 200 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
 
 ### Témák
 
-- **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete
-- **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás
-- **Érettségi (középszint):** lineáris függvény, másodfokú egyenlet, másodfokú függvény, valószínűség, derékszögű háromszög, hatványozás azonosságai, logaritmus, számtani és mértani sorozat, átlag és medián, kombinatorika, abszolút értékes egyenlet, elsőfokú egyenlőtlenség, nevezetes szögek, kör, exponenciális egyenlet, koordinátageometria, téglatest
-- **Egyetem (Matek 1):** határérték a végtelenben, deriválás, határozott integrál, determináns és mátrix–vektor szorzás, komplex számok, végtelen mértani sor, parciális derivált, lineáris egyenletrendszer, deriválási szabályok, sajátérték
+- **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok
+- **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás
+- **Érettségi (középszint):** lineáris függvény, másodfokú egyenlet, másodfokú függvény, valószínűség, derékszögű háromszög, hatványozás azonosságai, logaritmus, számtani és mértani sorozat, átlag és medián, kombinatorika, abszolút értékes egyenlet, elsőfokú egyenlőtlenség, nevezetes szögek, kör, exponenciális egyenlet, koordinátageometria, téglatest, négyzetgyök, szögfüggvények derékszögű háromszögben, kamatos kamat, halmazok
+- **Egyetem (Matek 1):** határérték a végtelenben, deriválás, határozott integrál, determináns és mátrix–vektor szorzás, komplex számok, végtelen mértani sor, parciális derivált, lineáris egyenletrendszer, deriválási szabályok, sajátérték, szélsőérték-keresés, skaláris szorzat, inverz mátrix
 
 Ez még nem a teljes tananyag: minden szinten hiányoznak témakörök.
 
@@ -53,6 +53,7 @@ js/content.js     hibakatalógus, témák, leckék, feladatgenerátorok
 js/content2.js    2. tartalomcsomag: új témák és az egyetemi ösvény
 js/content3.js    3. tartalomcsomag: további témák mind a négy szinten
 js/content4.js    4. tartalomcsomag: alapozó témák mind a négy szinten
+js/content5.js    5. tartalomcsomag: további alapozó témák
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák
 js/app.js         képernyők és műveletek
