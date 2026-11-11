@@ -1,4 +1,4 @@
-/* Kisötös – tartalom, 12. csomag: témakörök minden ösvényen és 21 új téma. Ennek kell az utolsó tartalomcsomagnak lennie. */
+/* Kisötös – tartalom, 12. csomag: témakörök minden ösvényen és 21 új téma. A későbbi csomagok a KO.regroup segítségével sorolnak be új témákat. */
 (function (KO) {
   'use strict';
   var reg = KO.reg, num = KO.num, par = KO.par, frac = KO.frac;

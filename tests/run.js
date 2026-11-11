@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -415,6 +415,41 @@ var verify = {
   },
   dualis: function (t) { var d = t.data; return t.answer === (d.askVar ? d.m : d.n); },
   maxfolyam: function (t) { var d = t.data; return t.answer === Math.min(d.sa + d.sb, d.at + d.sb, d.sa + d.bt, d.at + d.bt); },
+  haromszogkerulet: function (t) { var d = t.data; return t.answer - d.a - d.b === d.c; },
+  teglalapoldal: function (t) { var d = t.data; return t.answer > 0 && d.a + t.answer + d.a + t.answer === d.K; },
+  tobbkevesebb: function (t) { var d = t.data, bela = d.a + d.b; return t.answer === d.a + bela; },
+  vasarlas: function (t) { var d = t.data, s = 0; for (var i = 0; i < d.n; i++) s += d.c; return t.answer === s; },
+  median5: function (t) { var x = t.data.xs, lo = 0, hi = 0; x.forEach(function (v) { if (v < t.answer) lo++; if (v > t.answer) hi++; }); return lo === 2 && hi === 2 && x.indexOf(t.answer) >= 0; },
+  egyszeruval: function (t) { var d = t.data; return t.answer.n * (d.p + d.k) === d.p * t.answer.d && reduced(t.answer); },
+  tizedesoszt10: function (t) { var d = t.data; return Math.abs(parseFloat(t.answer.replace(',', '.')) - d.A / 10 / d.div) < 1e-9; },
+  meretarany: function (t) { var d = t.data; return Math.abs(d.cm * (d.per * 100000) / 100000 - t.answer) < 1e-9; },
+  sulyozottatlag: function (t) { var c = t.data.c, all = [], s = 0; [5, 4, 3].forEach(function (g, i) { for (var k = 0; k < c[i]; k++) all.push(g); }); all.forEach(function (v) { s += v; }); return Math.abs(s / all.length - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  binomval: function (t) { var d = t.data, fav = 0, tot = 1 << d.n; for (var m = 0; m < tot; m++) { var c = 0; for (var i = 0; i < d.n; i++) if (m >> i & 1) c++; if (c === d.k) fav++; } return t.answer.n * tot === fav * t.answer.d && reduced(t.answer); },
+  szita: function (t) { var d = t.data, onlyA = d.a - d.both, onlyB = d.b - d.both; return onlyA >= 0 && onlyB >= 0 && t.answer >= 0 && onlyA + onlyB + d.both + t.answer === d.N; },
+  testatlo: function (t) { var e = t.data.e; return Math.abs(Math.sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]) - t.answer) < 1e-9; },
+  osztokszama: function (t) { var n = t.data.n, c = 0; for (var i = 1; i <= n; i++) if (n % i === 0) c++; return t.answer === c; },
+  heron: function (t) { var e = t.data.e, s = (e[0] + e[1] + e[2]) / 2; return e[0] + e[1] > e[2] && e[0] + e[2] > e[1] && e[1] + e[2] > e[0] && Math.abs(Math.sqrt(s * (s - e[0]) * (s - e[1]) * (s - e[2])) - t.answer) < 1e-9; },
+  rekurziv: function (t) { var d = t.data, x = d.a1; for (var i = 0; i < 3; i++) x = d.p * x + d.q; return t.answer === x; },
+  jatekvarhato: function (t) { var d = t.data; return Math.abs(d.a / d.k + d.b / d.k - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  komplexosztas: function (t) { var d = t.data, n2 = d.c * d.c + d.d * d.d, re = (d.re * d.c + d.im * d.d) / n2, im = (d.im * d.c - d.re * d.d) / n2; return Math.abs((d.askRe ? re : im) - t.answer) < 1e-9; },
+  ehatar: function (t) { var k = t.data.k, n = 1e7; return Math.abs(Math.log(Math.pow(1 + k / n, n)) - t.answer) < 1e-4; },
+  sinhatar: function (t) { var d = t.data, x = 1e-6; return Math.abs(Math.sin(d.a * x) / (d.b * x) - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer); },
+  szita3: function (t) { var d = t.data; return t.answer === d.A + d.B + d.C - d.ab - d.ac - d.bc + d.abc && d.abc <= Math.min(d.ab, d.ac, d.bc); },
+  megoldasszam: function (t) {
+    var d = t.data, det = d.a * d.d - d.b * d.c;
+    var cls = det !== 0 ? 'egy megoldása van' : (d.a * d.f - d.c * d.e === 0 && d.b * d.f - d.d * d.e === 0) ? 'végtelen sok megoldása van' : 'nincs megoldása';
+    return t.answer === cls;
+  },
+  gausslepes: function (t) { var d = t.data, m = d.c / d.a; return Math.abs(d.c - m * d.a) < 1e-9 && Math.abs(d.d - m * d.b - t.answer) < 1e-9; },
+  vegyesszorzat: function (t) {
+    var M = t.data.M, a = M[0], b = M[1], c = M[2], cr = [b[1] * c[2] - b[2] * c[1], b[2] * c[0] - b[0] * c[2], b[0] * c[1] - b[1] * c[0]];
+    return t.answer === Math.abs(a[0] * cr[0] + a[1] * cr[1] + a[2] * cr[2]) && t.answer > 0;
+  },
+  vektorszog: function (t) { var d = t.data, ang = Math.acos((d.a * d.c + d.b * d.d) / (Math.hypot(d.a, d.b) * Math.hypot(d.c, d.d))) * 180 / Math.PI; return t.answer === (Math.abs(ang - 90) < 1e-7 ? 'derékszöget' : ang < 90 ? 'hegyesszöget' : 'tompaszöget'); },
+  osszegszoras: function (t) { var d = t.data; return t.answer === d.vx + d.vy + d.cov + d.cov && t.answer > 0; },
+  fuggetlenteszt: function (t) { var d = t.data; return t.answer === (Math.abs(d.c / (d.m * d.m) - (d.i / d.m) * (d.j / d.m)) < 1e-12 ? 'függetlenek' : 'nem függetlenek') && d.c >= 1 && d.c <= d.m * Math.min(d.i, d.j); },
+  korrigalt: function (t) { var x = t.data.xs, m = (x[0] + x[1] + x[2] + x[3]) / 4, s = 0; x.forEach(function (v) { s += (v - m) * (v - m); }); return Math.abs(s / (x.length - 1) - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  kritikusut: function (t) { var d = t.data, efA = d.A, efB = d.B, efC = Math.max(efA, efB) + d.C, efD = efA + d.D; return t.answer === Math.max(efC, efD); },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };

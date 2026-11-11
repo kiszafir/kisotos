@@ -16,18 +16,18 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Három hangulat (Felfedező, Tanuló, Fókusz), fehér és fekete mód (a fejlécben egy gombbal váltható), „kevesebb zsúfoltság” mód | kész |
 | Ma, Ösvény, Lecke, Gyakorlás, Tudástérkép, Beállítások képernyő | kész |
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
-| 266 téma leckével, 297 feladatgenerátor (minden feladat új számokkal jön) | kész |
+| 294 téma leckével, 325 feladatgenerátor (minden feladat új számokkal jön) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
 | Javítás hibatípus szerint (100 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
 | Tudásszint témánként, térköz-ismétlés, gyökérok-keresés az előfeltételek között, ajánló | kész |
 | Minden leckében lépésenként kibontható, újragenerálható példa a tipikus hibával és az előfeltétel-leckék linkjével | kész |
 | Felolvasás gomb (a böngésző magyar hangjával, ha van) | kész |
 | Hibajelentés: a feladat azonosítója helyben tárolódik, a Beállításokból kimásolható | kész |
-| Automatikus tesztek: 118 800 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
+| Automatikus tesztek: 130 000 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
 
 ### Témák
 
-Hét ösvény van: alsó tagozat (45 téma), felső tagozat (57), középszintű érettségi (55), emelt szintű érettségi (25), egyetemi matek 1 (30), egyetemi matek 2 (27), egyetemi matek 3 (27). Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
+Hét ösvény van: alsó tagozat (49 téma), felső tagozat (61), középszintű érettségi (59), emelt szintű érettségi (29), egyetemi matek 1 (34), egyetemi matek 2 (31), egyetemi matek 3 (31). Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
 
 - **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok, számok összehasonlítása, számsorozatok, kétjegyű kivonás, maradékos osztás, szorzás kerek tízesekkel, tízesek és egyesek, hiányzó tényező, óra és perc, négyzet, kerek százasok
 - **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás, prímszámok, mennyiség törtrésze, átlag, egyenes arányosság, háromszög szögei, zárójeles egyenlet, tizedes törtek szorzása 10-zel és 100-zal, koordináta-rendszer, kocka, leárazás, Pitagorasz-tétel
@@ -63,7 +63,8 @@ js/content8.js    8. tartalomcsomag: a tanterv-lista első adagja, emelt szintű
 js/content9.js    9. tartalomcsomag: a tanterv-lista második adagja (41 téma)
 js/content10.js   10. tartalomcsomag: az egyetemi rész három ösvényre bontva, 30 új téma
 js/content11.js   11. tartalomcsomag: 41 új téma mind a hét ösvényen
-js/content12.js   12. tartalomcsomag: témakörök minden ösvényen, 21 új téma (ennek kell utolsónak betöltődnie)
+js/content12.js   12. tartalomcsomag: témakörök minden ösvényen, 21 új téma
+js/content13.js   13. tartalomcsomag: 28 új téma a meglévő témakörökbe sorolva
 TANTERV.md        a bővítés útiterve (a teljes témalista)
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák
