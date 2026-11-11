@@ -16,21 +16,21 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Három hangulat (Felfedező, Tanuló, Fókusz), fehér és fekete mód (a fejlécben egy gombbal váltható), „kevesebb zsúfoltság” mód | kész |
 | Ma, Ösvény, Lecke, Gyakorlás, Tudástérkép, Beállítások képernyő | kész |
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
-| 87 téma leckével, 113 feladatgenerátor (minden feladat új számokkal jön) | kész |
+| 104 téma leckével, 135 feladatgenerátor (minden feladat új számokkal jön) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
-| Javítás hibatípus szerint (93 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
+| Javítás hibatípus szerint (98 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
 | Tudásszint témánként, térköz-ismétlés, gyökérok-keresés az előfeltételek között, ajánló | kész |
 | Minden leckében lépésenként kibontható, újragenerálható példa a tipikus hibával és az előfeltétel-leckék linkjével | kész |
 | Felolvasás gomb (a böngésző magyar hangjával, ha van) | kész |
 | Hibajelentés: a feladat azonosítója helyben tárolódik, a Beállításokból kimásolható | kész |
-| Automatikus tesztek: 45 200 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
+| Automatikus tesztek: 54 000 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
 
 ### Témák
 
-- **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok, számok összehasonlítása, számsorozatok, kétjegyű kivonás, maradékos osztás, szorzás kerek tízesekkel
-- **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás, prímszámok, mennyiség törtrésze, átlag, egyenes arányosság, háromszög szögei, zárójeles egyenlet
-- **Érettségi (középszint):** lineáris függvény, másodfokú egyenlet, másodfokú függvény, valószínűség, derékszögű háromszög, hatványozás azonosságai, logaritmus, számtani és mértani sorozat, átlag és medián, kombinatorika, abszolút értékes egyenlet, elsőfokú egyenlőtlenség, nevezetes szögek, kör, exponenciális egyenlet, koordinátageometria, téglatest, négyzetgyök, szögfüggvények derékszögű háromszögben, kamatos kamat, halmazok, nevezetes azonosságok, egyenes egyenlete, egymás utáni százalékos változás, henger, független események
-- **Egyetem (Matek 1):** határérték a végtelenben, deriválás, határozott integrál, determináns és mátrix–vektor szorzás, komplex számok, végtelen mértani sor, parciális derivált, lineáris egyenletrendszer, deriválási szabályok, sajátérték, szélsőérték-keresés, skaláris szorzat, inverz mátrix, határozatlan alakú határérték, második derivált, vektoriális szorzat, várható érték
+- **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok, számok összehasonlítása, számsorozatok, kétjegyű kivonás, maradékos osztás, szorzás kerek tízesekkel, tízesek és egyesek, hiányzó tényező, óra és perc, négyzet, kerek százasok
+- **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás, prímszámok, mennyiség törtrésze, átlag, egyenes arányosság, háromszög szögei, zárójeles egyenlet, tizedes törtek szorzása 10-zel és 100-zal, koordináta-rendszer, kocka, leárazás, Pitagorasz-tétel
+- **Érettségi (középszint):** lineáris függvény, másodfokú egyenlet, másodfokú függvény, valószínűség, derékszögű háromszög, hatványozás azonosságai, logaritmus, számtani és mértani sorozat, átlag és medián, kombinatorika, abszolút értékes egyenlet, elsőfokú egyenlőtlenség, nevezetes szögek, kör, exponenciális egyenlet, koordinátageometria, téglatest, négyzetgyök, szögfüggvények derékszögű háromszögben, kamatos kamat, halmazok, nevezetes azonosságok, egyenes egyenlete, egymás utáni százalékos változás, henger, független események, logaritmus azonosságai, gúla, vektorok a síkban
+- **Egyetem (Matek 1):** határérték a végtelenben, deriválás, határozott integrál, determináns és mátrix–vektor szorzás, komplex számok, végtelen mértani sor, parciális derivált, lineáris egyenletrendszer, deriválási szabályok, sajátérték, szélsőérték-keresés, skaláris szorzat, inverz mátrix, határozatlan alakú határérték, második derivált, vektoriális szorzat, várható érték, primitív függvény, improprius integrál, mátrix rangja, binomiális eloszlás
 
 Ez még nem a teljes tananyag: minden szinten hiányoznak témakörök.
 
@@ -56,6 +56,7 @@ js/content3.js    3. tartalomcsomag: további témák mind a négy szinten
 js/content4.js    4. tartalomcsomag: alapozó témák mind a négy szinten
 js/content5.js    5. tartalomcsomag: további alapozó témák
 js/content6.js    6. tartalomcsomag: húsz új téma
+js/content7.js    7. tartalomcsomag: tizenhét új téma és új feladattípusok
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák
 js/app.js         képernyők és műveletek

@@ -165,7 +165,7 @@
 
   /* ---------- Feladatgenerátorok ---------- */
   var G = {};
-  function reg(topic, id, level, make) { G[id] = { id: id, topic: topic, level: level, make: make }; }
+  function reg(topic, id, level, make) { if (G[id]) throw new Error('Kétszer regisztrált feladattípus: ' + id); G[id] = { id: id, topic: topic, level: level, make: make }; }
   KO.gens = G;
   KO.reg = reg;
   KO.gensOf = function (topicId) {
