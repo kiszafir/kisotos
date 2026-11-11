@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -205,6 +205,60 @@ var verify = {
   hesse: function (t) { var d = t.data, f = function (x, y) { return d.a * x * x + d.b * x * y + d.c * y * y; }, fxx = f(1, 0) - 2 * f(0, 0) + f(-1, 0), fyy = f(0, 1) - 2 * f(0, 0) + f(0, -1), fxy = (f(1, 1) - f(1, -1) - f(-1, 1) + f(-1, -1)) / 4; return fxx * fyy - fxy * fxy === t.answer; },
   kettos: function (t) { var d = t.data, N = 40, s = 0; for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) s += (d.a * (i + 0.5) * d.p / N + d.b * (j + 0.5) * d.q / N) * (d.p / N) * (d.q / N); return Math.abs(s - t.answer) < 1e-9; },
   taylor: function (t) { var f = 1; for (var i = 1; i <= t.data.n; i++) f *= i; return t.answer.n === 1 && t.answer.d === f; },
+  helyi1000: function (t) { var d = t.data, s = String(d.n); return s.length === 3 && t.answer === Number(s.charAt(d.k)); },
+  haromjegyu: function (t) { return t.answer - t.data.b === t.data.a; },
+  irasbeliosztas: function (t) { return t.answer * t.data.d === t.data.N; },
+  sorrendalso: function (t) { var d = t.data, s = d.a; for (var i = 0; i < d.b; i++) s += d.c; return t.answer === s; },
+  tortelo: function (t) { return t.answer * t.data.k === t.data.N; },
+  urtartalom: function (t) { var d = t.data, f = { 'l>dl': 10, 'dl>cl': 10, 'l>ml': 1000, 'hl>l': 100, 'l>cl': 100 }[d.from + '>' + d.to]; return t.answer === d.n * f; },
+  ido2: function (t) { var d = t.data, f = { 'nap>óra': 24, 'hét>nap': 7, 'perc>másodperc': 60, 'év>hónap': 12 }[d.from + '>' + d.to]; return t.answer === d.n * f; },
+  torthasonlit: function (t) { var d = t.data, l = d.a / d.b, r = d.c / d.d; return Math.abs(l - r) > 1e-9 && t.answer === (l > r ? 'az első' : 'a második'); },
+  tizedeskivon: function (t) { var d = t.data; return Math.abs(parseFloat(t.answer.replace(',', '.')) - (d.A / 10 - d.B / 10)) < 1e-9; },
+  lkkt2: function (t) { var d = t.data, m = Math.max(d.a, d.b); while (m % d.a !== 0 || m % d.b !== 0) m++; return t.answer === m; },
+  tortegesz: function (t) { var d = t.data; return t.answer.n * d.d === d.k * d.n * t.answer.d && reduced(t.answer); },
+  tizedesszorzas: function (t) { var d = t.data; return Math.abs(parseFloat(t.answer.replace(',', '.')) - d.a * d.b / 100) < 1e-9 && /^0,\d\d$/.test(t.answer); },
+  egyenloszaru: function (t) { return t.answer > 0 && t.answer + t.data.be + t.data.be === 180; },
+  trapez: function (t) { var d = t.data; return 2 * t.answer === d.a * d.m + d.c * d.m; },
+  eletkor: function (t) { var d = t.data; return t.answer + d.k * t.answer === d.S; },
+  relgyak: function (t) { var d = t.data; return t.answer.n * d.N === d.k * t.answer.d && reduced(t.answer); },
+  halmazmuvelet: function (t) {
+    var d = t.data, c = 0, i;
+    if (d.op === 'metszet') { for (i = 1; i <= 12; i++) if (d.A.indexOf(i) >= 0 && d.B.indexOf(i) >= 0) c++; }
+    else if (d.op === 'unio') { for (i = 1; i <= 12; i++) if (d.A.indexOf(i) >= 0 || d.B.indexOf(i) >= 0) c++; }
+    else { for (i = 1; i <= 12; i++) if (d.A.indexOf(i) >= 0 && d.B.indexOf(i) < 0) c++; }
+    return t.answer === c;
+  },
+  logika: function (t) {
+    var d = t.data, tab = { es: [[false, false], [false, true]], vagy: [[false, true], [true, true]], nem: [[true, true], [false, false]], ha: [[true, true], [false, true]] };
+    return t.answer === (tab[d.op][d.a ? 1 : 0][d.b ? 1 : 0] ? 'igaz' : 'hamis');
+  },
+  tortkitevo: function (t) { var d = t.data; return Math.abs(Math.pow(d.X, d.p / d.q) - t.answer) < 1e-9; },
+  gyokegyenlet: function (t) { var d = t.data; return t.answer + d.a >= 0 && Math.sqrt(t.answer + d.a) === d.b; },
+  logegyenlet: function (t) { var d = t.data; return Math.abs(Math.log(t.answer) / Math.log(d.b) - d.k) < 1e-9; },
+  koszinusz: function (t) { var d = t.data; return Math.abs(Math.sqrt(d.a * d.a + d.b * d.b - 2 * d.a * d.b * Math.cos(Math.PI / 3)) - t.answer) < 1e-9; },
+  variacio: function (t) { var d = t.data, f = function (n) { return n < 2 ? 1 : n * f(n - 1); }; return t.answer === f(d.n) / f(d.n - d.k); },
+  szorasnegyzet: function (t) { var x = t.data.xs, s1 = 0, s2 = 0; x.forEach(function (v) { s1 += v; s2 += v * v; }); return Math.abs(s2 / x.length - (s1 / x.length) * (s1 / x.length) - t.answer) < 1e-9; },
+  kup: function (t) { var d = t.data; return 3 * t.answer === d.r * d.r * d.m; },
+  kongruencia: function (t) { var d = t.data; return BigInt(t.answer) === (BigInt(d.a) ** BigInt(d.n)) % BigInt(d.m); },
+  mertanikozep: function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.x * d.y; },
+  ketszeres: function (t) { var d = t.data, al = Math.asin(d.a / d.c); return d.a * d.a + d.b * d.b === d.c * d.c && Math.abs(Math.sin(2 * al) - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  inverzfv: function (t) { var d = t.data; return d.a * t.answer + d.b === d.y0; },
+  osszetett: function (t) { var d = t.data, gv = d.x0 * d.x0 + d.c; return t.answer === d.a * gv + d.b; },
+  sorozathatar: function (t) { var d = t.data, n = 1e9; return Math.abs((d.a * n + d.b) / (d.c * n + d.d) - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer); },
+  pontegyenes: function (t) { var d = t.data; return Math.abs(Math.abs(d.A * d.x0 + d.B * d.y0 + d.C) / Math.hypot(d.A, d.B) - t.answer) < 1e-9; },
+  hatvanyhalmaz: function (t) { var c = 0; for (var m = 0; m < (1 << t.data.n); m++) c++; return t.answer === c; },
+  konjugalt: function (t) { var d = t.data; return t.answer === d.a * d.a - (d.b * -d.b); },
+  sorkonv: function (t) { var d = t.data; return d.p !== d.q && t.answer === (d.p / d.q < 1 ? 'konvergens' : 'divergens'); },
+  inthelyettesites: function (t) {
+    var n = t.data.n, N = 20000, h = 1 / N, s = 0, f = function (x) { return 2 * x * Math.pow(x * x + 1, n); };
+    for (var i = 0; i < N; i++) s += (f(i * h) + 4 * f((i + 0.5) * h) + f((i + 1) * h)) * h / 6;
+    return Math.abs(s - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer);
+  },
+  lagrange: function (t) { var S = t.data.S, best = -1; for (var x = 0; x <= S; x += 0.5) best = Math.max(best, x * (S - x)); return t.answer === best; },
+  egyenletes: function (t) { var d = t.data; return d.a < d.c && d.c < d.b && t.answer.n * (d.b - d.a) === (d.c - d.a) * t.answer.d && reduced(t.answer); },
+  bayes: function (t) { var d = t.data, j1 = 0.5 * d.p1 / 10, j2 = 0.5 * d.p2 / 10; return Math.abs(j1 / (j1 + j2) - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  standard: function (t) { var d = t.data; return t.answer * d.s + d.mu === d.x; },
+  lp: function (t) { var d = t.data, best = -1; for (var x = 0; x <= d.p; x++) for (var y = 0; y <= d.q; y++) if (x + y <= d.s) best = Math.max(best, d.a * x + d.b * y); return t.answer === best; },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
