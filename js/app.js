@@ -132,7 +132,7 @@
     }
     var h = '<div class="stack"><div><h1>' + esc(t.name) + '</h1><p class="muted">' + gs.length + ' témakör, ' + t.ids.length + ' téma. Koppints egy témakörre, és megnyílnak a témái.</p></div>';
     var q = A.ui.q || '';
-    h += '<div class="search"><label class="eyebrow" for="f-q">Téma keresése</label><div class="btn-row"><input id="f-q" class="num-in grow" data-field="q" type="search" autocomplete="off" placeholder="például tört, derivált" value="' + esc(q) + '">' + btn('Keresés', 'keres', '', 'ghost') + (q ? btn('Törlés', 'keres-torol', '', 'ghost') : '') + '</div></div>';
+    h += '<form class="search" data-form="keres"><label class="eyebrow" for="f-q">Téma keresése</label><div class="btn-row"><input id="f-q" class="num-in grow" data-field="q" type="search" autocomplete="off" placeholder="például tört, derivált" value="' + esc(q) + '">' + btn('Keresés', 'keres', '', 'ghost') + (q ? btn('Törlés', 'keres-torol', '', 'ghost') : '') + '</div></form>';
     if (q) {
       var nq = norm(q), hits = [], other = [];
       t.ids.forEach(function (id) { if (norm(KO.topics[id].name).indexOf(nq) >= 0) hits.push(id); });
@@ -520,7 +520,7 @@
     root.addEventListener('submit', function (ev) {
       ev.preventDefault();
       collect();
-      A.act('ellenoriz');
+      A.act(ev.target && ev.target.getAttribute && ev.target.getAttribute('data-form') === 'keres' ? 'keres' : 'ellenoriz');
       render();
     });
     A.init();

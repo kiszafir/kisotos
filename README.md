@@ -68,6 +68,7 @@ js/content13.js   13. tartalomcsomag: 28 új téma a meglévő témakörökbe so
 js/content14.js   14. tartalomcsomag: újabb 28 téma a témakörökbe sorolva
 js/content15.js   15. tartalomcsomag: 28 téma részletesebb leckékkel, fogalmi (definíció- és tételértő) kérdésekkel
 js/content16.js   16. tartalomcsomag: 21 téma részletes leckékkel
+js/content17.js   17. csomag: „Hogyan gondolkodj?” magyarázat 111 korábbi téma leckéjéhez
 TANTERV.md        a bővítés útiterve (a teljes témalista)
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák

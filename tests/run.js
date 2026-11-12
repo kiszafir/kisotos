@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -666,6 +666,13 @@ ok(KO.rootCause('t5-osszeadas', KO.topics, state) === 't5-bovites', 'gyökérok 
 ok(KO.recommend(KO.tracks.tortek.ids, KO.topics, state, 0).why === 'gyokerok', 'az ajánló a gyökérokot veszi előre');
 var fresh = KO.fresh();
 ok(KO.recommend(KO.tracks.erettsegi.ids, KO.topics, fresh, 0).id === 'e-halmaz', 'új tanulónak az első téma');
+ok(KO.howAdded === 111, 'a 17. csomag 111 leckét egészített ki magyarázattal');
+Object.keys(KO.topics).forEach(function (id) {
+  var hw = KO.topics[id].lesson.filter(function (b) { return b.h === 'Hogyan gondolkodj?'; });
+  ok(hw.length <= 1, id + ': legfeljebb egy „Hogyan gondolkodj?” rész');
+  if (hw.length) ok(hw[0].x.length >= 80 && KO.topics[id].lesson.indexOf(hw[0]) <= 1, id + ': a magyarázat elég hosszú, és a lecke elején áll');
+});
+Object.keys(KO.tracks).forEach(function (k) { var ids = KO.tracks[k].ids, n = ids.filter(function (id) { return KO.topics[id].lesson.some(function (b) { return b.h === 'Hogyan gondolkodj?'; }); }).length; ok(n * 3 >= ids.length, k + ': a leckék legalább harmadában van részletes magyarázat (' + n + ' / ' + ids.length + ')'); });
 Object.keys(KO.tracks).forEach(function (k) { var rc = KO.recommend(KO.tracks[k].ids, KO.topics, KO.fresh(), 0), ids = KO.tracks[k].ids; ok(rc.why === 'uj' && KO.topics[rc.id].pre.every(function (p) { return ids.indexOf(p) < 0; }), k + ': az első ajánlott témának nincs előzménye az ösvényen'); });
 var pg = KO.pickGens(KO.gensOf('e-egyenlet'), null, 5);
 ok(pg.length === 5 && pg.every(function (x) { return x === pg[0]; }), 'kezdőnek a legkönnyebb feladattípus');
