@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -587,6 +587,31 @@ var verify = {
   dualitastetel: function (t) { var d = t.data; return d.lo < d.hi && t.answer === 'legalább ' + d.lo + ' és legfeljebb ' + d.hi; },
   mintaelemszam: function (t) { var d = t.data, n = 1; while (2 * d.s / Math.sqrt(n) > d.d + 1e-12) n++; return t.answer === n; },
   normalosszeg: function (t) { var d = t.data; return Math.abs(Math.sqrt(d.s1 * d.s1 + d.s2 * d.s2) - t.answer) < 1e-9; },
+  tizzeltobb: function (t) { var d = t.data; return (d.up ? t.answer - d.n : d.n - t.answer) === d.st && t.answer > 0; },
+  csomagolas: function (t) { var d = t.data; return t.answer * d.k >= d.N && (t.answer - 1) * d.k < d.N; },
+  kockaszamlalas: function (t) { var d = t.data, c = 0; for (var i = 0; i < d.a; i++) for (var j = 0; j < d.b; j++) for (var k = 0; k < d.c; k++) c++; return t.answer === c; },
+  vegyesosszead: function (t) { var d = t.data; return Math.abs(d.w1 + d.p[0] / d.p[1] + d.w2 + d.q[0] / d.q[1] - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer); },
+  afa: function (t) { return Math.abs(t.data.n * 1.27 - t.answer) < 1e-6; },
+  kockael: function (t) { return t.answer * t.answer * t.answer === t.data.V; },
+  negativkitevo: function (t) { var d = t.data; return Math.abs(Math.pow(d.b, -d.k) - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer); },
+  szorzatnulla: function (t) { var d = t.data, f = function (x) { return (x - d.r1) * (x - d.r2); }, best = null; for (var x = -20; x <= 20; x++) if (f(x) === 0) best = x; return t.answer === best; },
+  magassag: function (t) { var d = t.data; return d.a * t.answer / 2 === d.T; },
+  gyoktelenites: function (t) { var d = t.data; return Math.abs(d.k / Math.sqrt(d.n) - t.answer * Math.sqrt(d.n)) < 1e-9; },
+  osszegkeplet: function (t) { var d = t.data, s = 0; for (var k = 1; k <= d.n; k++) s += d.kind === 0 ? k : d.kind === 1 ? k * k : 2 * k - 1; return t.answer === s; },
+  legalabbegy: function (t) {
+    var d = t.data, sides = d.dice ? 6 : 2, tot = Math.pow(sides, d.n), fav = 0;
+    for (var m = 0; m < tot; m++) { var x = m, hit = false; for (var i = 0; i < d.n; i++) { if (x % sides === 0) hit = true; x = Math.floor(x / sides); } if (hit) fav++; }
+    return t.answer.n * tot === fav * t.answer.d && reduced(t.answer);
+  },
+  maradekosztaly: function (t) { var d = t.data, c = 0; for (var k = 1; k <= d.N; k++) if (k % d.m === d.a % d.m) c++; return t.answer === c; },
+  komplexmasodfoku: function (t) { var d = t.data, b = -2 * d.p, disc = b * b - 4 * d.c; return disc < 0 && Math.abs((d.askIm ? Math.sqrt(-disc) / 2 : -b / 2) - t.answer) < 1e-9; },
+  logintegral: function (t) { var d = t.data, hi = Math.exp(d.k), N = 20000, s = 0; for (var i = 0; i < N; i++) { var u = (i + 0.5) / N, x = Math.exp(u * d.k); s += d.a / x * x * d.k / N; } return Math.abs(s - t.answer) < 1e-6 && hi > 1; },
+  transzponalt: function (t) { var d = t.data, T = [[], [], []]; d.A.forEach(function (row, r0) { row.forEach(function (v, c0) { T[c0][r0] = v; }); }); return t.answer === T[d.i][d.j]; },
+  nemtrivialis: function (t) { var d = t.data, found = false; for (var x = -6; x <= 6; x++) for (var y = -6; y <= 6; y++) if ((x || y) && d.a * x + d.b * y === 0 && d.c * x + d.d * y === 0) found = true; return t.answer === (found ? 'igen, végtelen sok megoldása van' : 'nem, csak a csupa nulla megoldás létezik') && found === (d.a * d.d - d.b * d.c === 0); },
+  tobbvaltozoslanc: function (t) { var d = t.data, f = function (x, y) { return d.fx * x + d.fy * y; }, h = 1e-4; return Math.abs((f(d.a * h, d.b * h) - f(-d.a * h, -d.b * h)) / (2 * h) - t.answer) < 1e-6; },
+  varhatolinearis: function (t) { var d = t.data, xs = [d.m - 1, d.m + 1], s = 0; xs.forEach(function (x) { s += (d.a * x + d.b) / 2; }); return Math.abs(s - t.answer) < 1e-9; },
+  standardhiba: function (t) { var d = t.data; return Math.abs(d.s / Math.sqrt(d.n) - t.answer) < 1e-9; },
+  eoq: function (t) { var d = t.data, best = null, bc = Infinity; for (var q = 1; q <= 400; q++) { var cst = d.D / q * d.K + q / 2 * 2; if (cst < bc - 1e-9) { bc = cst; best = q; } } return t.answer === best && Math.abs(Math.sqrt(2 * d.D * d.K / 2) - t.answer) < 1e-9; },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
@@ -667,6 +692,8 @@ ok(KO.recommend(KO.tracks.tortek.ids, KO.topics, state, 0).why === 'gyokerok', '
 var fresh = KO.fresh();
 ok(KO.recommend(KO.tracks.erettsegi.ids, KO.topics, fresh, 0).id === 'e-halmaz', 'új tanulónak az első téma');
 ok(KO.howAdded === 111, 'a 17. csomag 111 leckét egészített ki magyarázattal');
+ok(KO.howAdded2 === 36, 'a 18. csomag 36 alsós leckét egészített ki magyarázattal');
+ok(KO.tracks.also.ids.every(function (id) { return KO.topics[id].lesson.some(function (b) { return b.h === 'Hogyan gondolkodj?'; }); }), 'az alsó tagozat minden leckéjében van részletes magyarázat');
 Object.keys(KO.topics).forEach(function (id) {
   var hw = KO.topics[id].lesson.filter(function (b) { return b.h === 'Hogyan gondolkodj?'; });
   ok(hw.length <= 1, id + ': legfeljebb egy „Hogyan gondolkodj?” rész');
