@@ -131,6 +131,27 @@
       gs.forEach(function (g, i) { if (g.ids.indexOf(r.id) >= 0) A.ui.grp = i; });
     }
     var h = '<div class="stack"><div><h1>' + esc(t.name) + '</h1><p class="muted">' + gs.length + ' témakör, ' + t.ids.length + ' téma. Koppints egy témakörre, és megnyílnak a témái.</p></div>';
+    var q = A.ui.q || '';
+    h += '<div class="search"><label class="eyebrow" for="f-q">Téma keresése</label><div class="btn-row"><input id="f-q" class="num-in grow" data-field="q" type="search" autocomplete="off" placeholder="például tört, derivált" value="' + esc(q) + '">' + btn('Keresés', 'keres', '', 'ghost') + (q ? btn('Törlés', 'keres-torol', '', 'ghost') : '') + '</div></div>';
+    if (q) {
+      var nq = norm(q), hits = [], other = [];
+      t.ids.forEach(function (id) { if (norm(KO.topics[id].name).indexOf(nq) >= 0) hits.push(id); });
+      Object.keys(KO.tracks).forEach(function (k) {
+        if (k === key) return;
+        KO.tracks[k].ids.forEach(function (id) { if (norm(KO.topics[id].name).indexOf(nq) >= 0) other.push([id, KO.tracks[k].name]); });
+      });
+      h += '<div class="card"><div class="eyebrow">Találatok: ' + (hits.length + other.length) + '</div>';
+      if (!hits.length && !other.length) h += '<p class="muted">Nincs ilyen nevű téma. Próbáld rövidebb szóval, például „tört” vagy „szög”.</p>';
+      hits.forEach(function (id) {
+        var gname = ''; gs.forEach(function (g) { if (g.ids.indexOf(id) >= 0) gname = g.name; });
+        h += '<div class="hit"><div><div class="node-name">' + esc(KO.topics[id].name) + '</div><div class="muted small">' + esc(gname) + '</div></div><div class="btn-row">' + btn('Lecke', 'lecke', id, 'ghost') + btn('Gyakorlás', 'gyak', id, 'ghost') + '</div></div>';
+      });
+      other.slice(0, 12).forEach(function (o) {
+        h += '<div class="hit"><div><div class="node-name">' + esc(KO.topics[o[0]].name) + '</div><div class="muted small">Másik szint: ' + esc(o[1]) + '</div></div><div class="btn-row">' + btn('Lecke', 'lecke', o[0], 'ghost') + '</div></div>';
+      });
+      if (other.length > 12) h += '<p class="muted small">És még ' + (other.length - 12) + ' találat más szinteken. Szűkítsd a keresést.</p>';
+      h += '</div>';
+    }
     gs.forEach(function (g, i) {
       var open = A.ui.grp === i, done = g.ids.filter(function (id) { var m = mast(id); return m !== null && m >= 75; }).length;
       var here = g.ids.indexOf(r.id) >= 0;
@@ -139,7 +160,7 @@
         '<span class="grp-sub">' + g.ids.length + ' téma · ' + done + ' erős' + (here ? ' · itt tartasz' : '') + '</span>' +
         '<span class="bar grp-bar" role="img" aria-label="' + done + ' erős a ' + g.ids.length + ' témából"><span class="bar-fill ok" style="width: ' + Math.round(100 * done / g.ids.length) + '%"></span></span></span>' +
         '<span class="grp-chev" aria-hidden="true">' + icon(open ? 'up' : 'down', 20) + '</span></button>';
-      if (open) h += '<ol class="path">' + g.ids.map(function (id) { return nodeHtml(id, r); }).join('') + '</ol>';
+      if (open) h += '<div class="grp-tools">' + btn('Vegyes gyakorlás ebből a témakörből', 'vegyes', i, 'ghost') + '</div><ol class="path">' + g.ids.map(function (id) { return nodeHtml(id, r); }).join('') + '</ol>';
       h += '</div>';
     });
     return h + '</div>';
@@ -185,6 +206,7 @@
     var segs = '';
     for (var i = 0; i < s.ids.length; i++) segs += '<span class="seg' + (i < s.i ? ' done' : i === s.i ? ' cur' : '') + '"></span>';
     h += '<div class="prog"><span class="strong">' + (s.i + 1) + '. feladat</span><span class="segs" role="img" aria-label="' + (s.i + 1) + '. feladat, összesen ' + s.ids.length + '">' + segs + '</span></div>';
+    if (s.logT) h += '<div class="muted small">Vegyes gyakorlás · ' + esc(KO.topics[t.topic].name) + '</div>';
     if (mood() === 'fokusz') h += '<div class="chips"><span class="chip">' + t.points + ' pont</span><span class="chip">kb. ' + t.minutes + ' perc</span><span class="chip">nehézség: ' + t.level + ' / 5</span></div>';
     var fig = t.fig && t.fig.type === 'tenframe' && (s.tips >= 2 || s.state !== 'open') ? Object.assign({}, t.fig, { moved: true }) : t.fig;
     h += '<div class="g-cols"><div class="g-left"><div class="card task"><p class="prompt">' + M(t.prompt) + '</p>' + (t.math ? '<div class="math big">' + M(t.math) + '</div>' : '') + KO.figure(fig) +
@@ -247,7 +269,8 @@
     var u = A.ui.sum, tp = KO.topics[u.topic], h = '<div class="stack">';
     if (mood() === 'felfedezo') h += '<div class="paca-row">' + paca(120) + '<div class="bubble">Kész a kör! Kaptál egy matricát.</div></div>';
     else h += '<h1>Kész a kör!</h1>';
-    h += '<div class="card"><div class="eyebrow">' + esc(tp.name) + '</div><div class="strong">' + u.total + ' feladatból ' + u.right + ' elsőre jó</div>' + levelRow(u.topic) + '</div>';
+    if (u.topics) h += '<div class="card"><div class="eyebrow">Vegyes gyakorlás: ' + esc(u.group) + '</div><div class="strong">' + u.total + ' feladatból ' + u.right + ' elsőre jó</div>' + u.topics.map(levelRow).join('') + '</div>';
+    else h += '<div class="card"><div class="eyebrow">' + esc(tp.name) + '</div><div class="strong">' + u.total + ' feladatból ' + u.right + ' elsőre jó</div>' + levelRow(u.topic) + '</div>';
     if (u.errs.length) {
       h += '<div class="card"><div class="eyebrow">Ezeken csúszott el</div><ul class="steps">' + u.errs.map(function (e) {
         return '<li>' + esc(KO.errs[e.err].l) + (e.n > 1 ? ' (' + e.n + '×)' : '') + ' <span class="muted small">– ' + esc(KO.errs[e.err].c) + ' hiba</span></li>';
@@ -258,6 +281,7 @@
     } else {
       h += '<p class="muted">' + (u.avg >= 0.8 ? 'Ez jól megy. Legközelebb ritkábban kerül elő, hogy másra is jusson idő.' : u.avg >= 0.5 ? 'Alakul. Holnap még egyszer előjön, hogy megmaradjon.' : 'Ez még nem megy biztosan. Nézd át a leckét, aztán jöhet egy újabb kör.') + '</p>';
     }
+    if (u.topics) return h + '<div class="btn-row">' + btn('Még egy vegyes kör', 'vegyes', u.mixed, 'ghost grow') + btn('Kész', 'nav', 'osveny', 'primary grow') + '</div></div>';
     return h + '<div class="btn-row">' + btn('Még egy kör', 'gyak', u.topic, 'ghost grow') + btn('Kész', 'nav', 'ma', 'primary grow') + '</div></div>';
   };
 
@@ -336,6 +360,20 @@
     A.ui.topic = id; A.ui.sess = s; A.ui.screen = 'gyak';
     newTask(s);
   }
+  /* Vegyes gyakorlás: egy témakör több témájából egy-egy feladat, a gyengébbekkel kezdve. */
+  function startMixed(gi) {
+    var g = groupsOf(track())[gi], seen = [], fresh = [];
+    g.ids.forEach(function (id) { (mast(id) === null ? fresh : seen).push(id); });
+    seen.sort(function (a, b) { return mast(a) - mast(b); });
+    var pool = seen.concat(fresh).slice(0, ROUND), i = 0;
+    while (pool.length < ROUND) pool.push(pool[i++ % g.ids.length]);
+    pool = KO.rng(A.S.seed++).shuffle(pool);
+    var s = { topic: pool[0], mixed: gi, group: g.name, logT: [], i: 0, log: [] };
+    s.ids = pool.map(function (id) { tstate(id).seen = true; return KO.pickGens(KO.gensOf(id), mast(id), 1)[0]; });
+    A.ui.topic = pool[0]; A.ui.sess = s; A.ui.screen = 'gyak';
+    newTask(s);
+  }
+  function norm(x) { return String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
   function parseInput(t) {
     var f = A.ui.fields, n = String(f.n || '').trim().replace(/−/g, '-'), d = String(f.d || '').trim();
     if (!/^-?\d+$/.test(n)) return { err: 'Írj be egy egész számot.' };
@@ -368,6 +406,7 @@
       var key = KO.dayKey(A.now());
       A.S.days[key] = (A.S.days[key] || 0) + 1;
       s.log.push(hrec);
+      if (s.logT) s.logT.push(t.topic);
       save();
     }
   }
@@ -380,9 +419,16 @@
     });
     Object.keys(map).forEach(function (k) { errs.push({ err: k, n: map[k] }); });
     var avg = s.log.length ? sum / s.log.length : 0;
-    KO.schedule(tstate(s.topic), avg, A.now());
     A.S.sessions++;
-    A.ui.sum = { topic: s.topic, total: s.log.length, right: right, avg: avg, errs: errs, root: KO.rootCause(s.topic, KO.topics, A.S) };
+    if (s.logT) {
+      var per = {}, touched = [];
+      s.logT.forEach(function (id, k) { if (!per[id]) { per[id] = []; touched.push(id); } per[id].push(s.log[k].s); });
+      touched.forEach(function (id) { KO.schedule(tstate(id), per[id].reduce(function (a, b) { return a + b; }, 0) / per[id].length, A.now()); });
+      A.ui.sum = { topic: s.topic, mixed: s.mixed, group: s.group, topics: touched, total: s.log.length, right: right, avg: avg, errs: errs, root: null };
+    } else {
+      KO.schedule(tstate(s.topic), avg, A.now());
+      A.ui.sum = { topic: s.topic, total: s.log.length, right: right, avg: avg, errs: errs, root: KO.rootCause(s.topic, KO.topics, A.S) };
+    }
     A.ui.sess = null; A.ui.screen = 'osszegzes';
     save();
   }
@@ -392,7 +438,7 @@
       A.S.profile = { track: arg, mood: KO.tracks[arg].mood };
       A.ui.screen = 'ma'; A.ui.sess = null; save();
     },
-    nav: function (arg) { if (arg === 'osveny' && A.ui.screen !== 'osveny') A.ui.grpTrack = null; A.ui.screen = arg; A.ui.confirmReset = false; },
+    nav: function (arg) { if (arg === 'osveny' && A.ui.screen !== 'osveny') { A.ui.grpTrack = null; A.ui.q = ''; } A.ui.screen = arg; A.ui.confirmReset = false; },
     csoport: function (arg) { var i = Number(arg); A.ui.grp = A.ui.grp === i ? -1 : i; },
     folytat: function () {
       var r = rec();
@@ -402,6 +448,9 @@
     'demo-lep': function () { if (A.ui.demo && A.ui.demo.step < 3) A.ui.demo.step++; },
     'demo-uj': function () { newDemo(A.ui.topic, false); save(); },
     gyak: function (id) { tstate(id).seen = true; startRound(id); },
+    vegyes: function (arg) { startMixed(Number(arg)); },
+    keres: function () { A.ui.q = String(A.ui.fields.q || '').trim(); },
+    'keres-torol': function () { A.ui.q = ''; },
     valaszt: function (arg) {
       var s = A.ui.sess;
       if (s.state !== 'open') return;
