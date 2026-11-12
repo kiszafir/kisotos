@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -631,6 +631,18 @@ var verify = {
   integralsorrend: function (t) { var d = t.data, N = 300, hx = d.p / N, hy = d.q / N, s = 0; for (var i = 0; i < N; i++) for (var j = 0; j < N; j++) s += d.c * (i + 0.5) * hx * (j + 0.5) * hy * hx * hy; return Math.abs(s - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer); },
   poisson: function (t) { var l = t.data.lam, m = 0, m2 = 0, p = Math.exp(-l); for (var k = 0; k < 200; k++) { m += k * p; m2 += k * k * p; p = p * l / (k + 1); } return Math.abs((t.data.what === 'várható értéke' ? m : m2 - m * m) - t.answer) < 1e-6; },
   arnyekar: function (t) { var d = t.data; return t.answer - d.z === d.y * d.d; },
+  paroskeres: function (t) { var d = t.data, c = 0; for (var x = d.a + 1; x < d.b; x++) if ((x % 2 === 0) === d.even) c++; return t.answer === c; },
+  oszthatokszama: function (t) { var d = t.data, c = 0; for (var x = 1; x <= d.N; x++) if (x % d.k === 0) c++; return t.answer === c; },
+  ellentett: function (t) { var d = t.data; return Math.abs(1 - d.n / d.d - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer); },
+  teljesnegyzet: function (t) { var d = t.data, best = Infinity; for (var x = -40; x <= 40; x++) best = Math.min(best, x * x + d.b * x + d.c); return t.answer === best; },
+  lancszabaly: function (t) { var d = t.data, f = function (x) { return Math.pow(d.a * x + d.b, d.n); }, h = 1e-5; return Math.abs((f(d.x0 + h) - f(d.x0 - h)) / (2 * h) - t.answer) < 1e-3; },
+  vetulet: function (t) { var a = t.data.a, b = t.data.b; return Math.abs((a[0] * b[0] + a[1] * b[1]) / Math.hypot(b[0], b[1]) - t.answer) < 1e-9; },
+  egyenletesvarhato: function (t) {
+    var d = t.data, N = 2000, s = 0, s2 = 0;
+    for (var i = 0; i < N; i++) { var x = d.a + (d.b - d.a) * (i + 0.5) / N; s += x; s2 += x * x; }
+    var m = s / N, v = s2 / N - m * m;
+    return Math.abs((d.askVar ? v : m) - t.answer) < 1e-4;
+  },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
@@ -711,6 +723,8 @@ ok(KO.recommend(KO.tracks.tortek.ids, KO.topics, state, 0).why === 'gyokerok', '
 var fresh = KO.fresh();
 ok(KO.recommend(KO.tracks.erettsegi.ids, KO.topics, fresh, 0).id === 'e-halmaz', 'új tanulónak az első téma');
 ok(KO.howAdded === 111, 'a 17. csomag 111 leckét egészített ki magyarázattal');
+ok(KO.howAdded4 === 90, 'a 20. csomag 90 leckét egészített ki magyarázattal');
+ok(Object.keys(KO.topics).every(function (id) { return KO.topics[id].lesson.filter(function (b) { return b.h === 'Hogyan gondolkodj?'; }).length === 1; }), 'minden leckében pontosan egy „Hogyan gondolkodj?” rész van');
 ok(KO.howAdded3 === 85, 'a 19. csomag 85 leckét egészített ki magyarázattal');
 ['tortek', 'erettsegi'].forEach(function (k) { ok(KO.tracks[k].ids.every(function (id) { return KO.topics[id].lesson.some(function (b) { return b.h === 'Hogyan gondolkodj?'; }); }), k + ': minden leckében van részletes magyarázat'); });
 ok(KO.howAdded2 === 36, 'a 18. csomag 36 alsós leckét egészített ki magyarázattal');
