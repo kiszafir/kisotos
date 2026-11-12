@@ -182,7 +182,9 @@
   /* ---------- Egy kör feladattípusai a tudásszint alapján ---------- */
   KO.pickGens = function (gens, mastery, n) {
     var sorted = gens.slice().sort(function (a, b) { return a.level - b.level; });
+    /* A legkönnyebb szinttel egyenlő szintű változatok kezdettől elérhetők, a nehezebbek a tudásszinttel nyílnak meg. */
     var allowed = Math.max(1, Math.min(sorted.length, 1 + Math.floor((mastery || 0) / 35)));
+    while (allowed < sorted.length && sorted[allowed].level === sorted[0].level) allowed++;
     var out = [];
     for (var i = 0; i < n; i++) out.push(sorted[i % allowed].id);
     return out;

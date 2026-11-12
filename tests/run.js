@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -643,6 +643,39 @@ var verify = {
     var m = s / N, v = s2 / N - m * m;
     return Math.abs((d.askVar ? v : m) - t.answer) < 1e-4;
   },
+  fuggetlen2: function (t) {
+    var d = t.data, pa = d.p[0] / d.p[1], pb = d.q[0] / d.q[1], v = [pa * pb, (1 - pa) * (1 - pb), 1 - (1 - pa) * (1 - pb)][d.kind];
+    return Math.abs(v - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer);
+  },
+  urna2: function (t) { var d = t.data, n = d.a + d.b, k = d.red ? d.a : d.b, fav = 0, tot = 0; for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) if (i !== j) { tot++; if (i < k && j < k) fav++; } return t.answer.n * tot === fav * t.answer.d && reduced(t.answer); },
+  egymasmellett: function (t) {
+    var n = t.data.n, c = 0;
+    (function rec(arr, used) { if (arr.length === n) { var i0 = arr.indexOf(0), i1 = arr.indexOf(1); if (Math.abs(i0 - i1) === 1) c++; return; } for (var j = 0; j < n; j++) if (!(used >> j & 1)) rec(arr.concat([j]), used | 1 << j); })([], 0);
+    return t.answer === c;
+  },
+  kezfogas: function (t) { var d = t.data, c = 0; for (var i = 0; i < d.n; i++) for (var j = i + 1; j < d.n; j++) if (!d.poly || (j - i !== 1 && j - i !== d.n - 1)) c++; return t.answer === c; },
+  taylorexp: function (t) { var d = t.data, f = 1; for (var i = 2; i <= d.k; i++) f *= i; return Math.abs(Math.pow(d.a, d.k) / f - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer); },
+  atlo2: function (t) { var d = t.data; return d.back ? t.answer > 0 && d.a * d.a + t.answer * t.answer === d.c * d.c : t.answer * t.answer === d.a * d.a + d.b * d.b; },
+  sokszog2: function (t) { var d = t.data; return d.kind === 0 ? Math.abs((d.n - 2) * 180 / d.n - t.answer) < 1e-9 : (t.answer - 2) * 180 === d.S; },
+  lhopital2: function (t) { var d = t.data, x = 1e-5, v = d.kind === 0 ? Math.expm1(d.a * x) / (d.b * x) : (1 - Math.cos(d.a * x)) / (x * x); return Math.abs(v - t.answer.n / t.answer.d) < 1e-3 && reduced(t.answer); },
+  meroleges2: function (t) { var d = t.data, sl = -1 / d.m; return Math.abs(d.q - (sl * d.p + t.answer)) < 1e-9; },
+  logegyenlet2: function (t) { var d = t.data, v = t.answer + d.c; return v > 0 && Math.abs(Math.log(v) / Math.log(d.b) - d.k) < 1e-9; },
+  tortkitevo2: function (t) { var d = t.data; return Math.abs(Math.pow(d.X, -d.p / d.q) - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer); },
+  szamkepzes: function (t) {
+    var d = t.data, c = 0, max = Math.pow(10, d.len);
+    for (var x = Math.pow(10, d.len - 1); x < max; x++) { var s = String(x), okv = true, seen = {}; for (var i = 0; i < s.length; i++) { var ch = s.charAt(i); if (ch === '0' || Number(ch) > d.k || (!d.rep && seen[ch])) okv = false; seen[ch] = 1; } if (okv) c++; }
+    return t.answer === c;
+  },
+  gyokkiemeles: function (t) { var d = t.data; return Math.abs(t.answer * Math.sqrt(d.b) - Math.sqrt(d.N)) < 1e-9; },
+  neghatvany: function (t) { var d = t.data, v = d.paren ? Math.pow(-d.b, d.n) : -Math.pow(d.b, d.n); return t.answer === v; },
+  reszhalmazok2: function (t) { var d = t.data, c = 0; for (var m = 0; m < (1 << d.n); m++) { var b = 0; for (var i = 0; i < d.n; i++) if (m >> i & 1) b++; if (d.kind === 0 ? b === d.k : (m & 1)) c++; } return t.answer === c; },
+  ismetleses2: function (t) {
+    var d = t.data, items = [], seen = {}, c = 0, i;
+    for (i = 0; i < d.a; i++) items.push('a'); for (i = 0; i < d.b; i++) items.push('b'); for (i = d.a + d.b; i < d.n; i++) items.push(String(i));
+    (function perm(rest, cur) { if (!rest.length) { if (!seen[cur]) { seen[cur] = 1; c++; } return; } var used = {}; for (var j = 0; j < rest.length; j++) { if (used[rest[j]]) continue; used[rest[j]] = 1; perm(rest.slice(0, j).concat(rest.slice(j + 1)), cur + rest[j] + ','); } })(items, '');
+    return t.answer === c;
+  },
+  legalabbegy2: function (t) { var d = t.data, tot = Math.pow(d.k, d.n), fav = 0; for (var m = 0; m < tot; m++) { var x = m, hit = false; for (var i = 0; i < d.n; i++) { if (x % d.k === 0) hit = true; x = Math.floor(x / d.k); } if (hit) fav++; } return t.answer.n * tot === fav * t.answer.d && reduced(t.answer); },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
@@ -737,7 +770,9 @@ Object.keys(KO.topics).forEach(function (id) {
 Object.keys(KO.tracks).forEach(function (k) { var ids = KO.tracks[k].ids, n = ids.filter(function (id) { return KO.topics[id].lesson.some(function (b) { return b.h === 'Hogyan gondolkodj?'; }); }).length; ok(n * 3 >= ids.length, k + ': a leckék legalább harmadában van részletes magyarázat (' + n + ' / ' + ids.length + ')'); });
 Object.keys(KO.tracks).forEach(function (k) { var rc = KO.recommend(KO.tracks[k].ids, KO.topics, KO.fresh(), 0), ids = KO.tracks[k].ids; ok(rc.why === 'uj' && KO.topics[rc.id].pre.every(function (p) { return ids.indexOf(p) < 0; }), k + ': az első ajánlott témának nincs előzménye az ösvényen'); });
 var pg = KO.pickGens(KO.gensOf('e-egyenlet'), null, 5);
-ok(pg.length === 5 && pg.every(function (x) { return x === pg[0]; }), 'kezdőnek a legkönnyebb feladattípus');
+var minLv = Math.min.apply(null, KO.gensOf('e-egyenlet').map(function (g) { return g.level; }));
+ok(pg.length === 5 && pg.every(function (x) { return KO.gens[x].level === minLv; }), 'kezdőnek csak a legkönnyebb szintű feladattípusok');
+ok(Object.keys(pg.reduce(function (m, x) { m[x] = 1; return m; }, {})).length === KO.gensOf('e-egyenlet').filter(function (g) { return g.level === minLv; }).length, 'kezdőnek az összes legkönnyebb szintű változat váltakozik');
 ok(Object.keys(KO.pickGens(KO.gensOf('e-egyenlet'), 80, 6).reduce(function (m, x) { m[x] = 1; return m; }, {})).length === 3, 'erős tanulónak minden feladattípus');
 
 /* ---------- 3) Képernyők végigjárása böngésző nélkül ---------- */
