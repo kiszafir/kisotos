@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -676,6 +676,28 @@ var verify = {
     return t.answer === c;
   },
   legalabbegy2: function (t) { var d = t.data, tot = Math.pow(d.k, d.n), fav = 0; for (var m = 0; m < tot; m++) { var x = m, hit = false; for (var i = 0; i < d.n; i++) { if (x % d.k === 0) hit = true; x = Math.floor(x / d.k); } if (hit) fav++; } return t.answer.n * tot === fav * t.answer.d && reduced(t.answer); },
+  felteteles2: function (t) { var d = t.data, pool = d.askGirl ? d.a + d.b : d.a + d.c; return t.answer.n * pool === d.a * t.answer.d && reduced(t.answer); },
+  binomvarhato: function (t) {
+    var d = t.data, p = 1 / d.k, c = 1, m = 0, p0 = Math.pow(1 - p, d.n);
+    for (var i = 0; i <= d.n; i++) { m += i * c * Math.pow(p, i) * Math.pow(1 - p, d.n - i); c = c * (d.n - i) / (i + 1); }
+    return Math.abs((d.kind === 0 ? m : p0) - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer);
+  },
+  gombterfogat: function (t) { return Math.abs(4 / 3 * Math.PI * Math.pow(t.data.r, 3) - t.answer * Math.PI) < 1e-6; },
+  kockaelfelszin: function (t) { return 6 * t.answer * t.answer === t.data.A; },
+  lagrange2: function (t) {
+    var d = t.data, best = Infinity;
+    for (var x = 0.25; x <= d.P; x += 0.25) { var y = d.P / x, v = d.wall ? 2 * (x + y) : x + y; if (v < best) best = v; }
+    return Math.abs(best - t.answer) < 1e-9;
+  },
+  kozephianyzo: function (t) { var d = t.data; return t.answer > 0 && (d.geo ? d.a * t.answer === d.m * d.m : d.a + t.answer === 2 * d.m); },
+  lognegativ: function (t) { var d = t.data; return Math.abs(Math.log(1 / Math.pow(d.b, d.k)) / Math.log(d.b) - t.answer) < 1e-9; },
+  egyenloszaru2: function (t) { return t.answer + t.answer + t.data.top === 180; },
+  ehatar2: function (t) { var d = t.data, n = 1e7; return Math.abs(d.b * n * Math.log1p(d.a / n) - t.answer) < 1e-4; },
+  forgastest2: function (t) { var d = t.data, N = 2000, h = d.h / N, s = 0; for (var i = 0; i < N; i++) s += d.k * (i + 0.5) * h * h; return Math.abs(s - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer); },
+  implicit2: function (t) {
+    var d = t.data, hh = 1e-6, y = function (x) { return Math.sqrt((d.R - d.A * x * x) / d.B); }, sl = (y(d.x0 + hh) - y(d.x0 - hh)) / (2 * hh);
+    return d.A * d.x0 * d.x0 + d.B * d.y0 * d.y0 === d.R && Math.abs(Math.abs(sl) - t.answer.n / t.answer.d) < 1e-5 && (sl < 0) === d.neg && reduced(t.answer);
+  },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };

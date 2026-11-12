@@ -16,14 +16,14 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Három hangulat (Felfedező, Tanuló, Fókusz), fehér és fekete mód (a fejlécben egy gombbal váltható), „kevesebb zsúfoltság” mód | kész |
 | Ma, Ösvény, Lecke, Gyakorlás, Tudástérkép, Beállítások képernyő | kész |
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
-| 413 téma leckével, 462 feladatgenerátor (minden feladat új számokkal jön) | kész |
+| 413 téma leckével, 473 feladatgenerátor (minden feladat új számokkal jön) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
 | Javítás hibatípus szerint (100 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
 | Tudásszint témánként, térköz-ismétlés, gyökérok-keresés az előfeltételek között, ajánló | kész |
 | Minden leckében lépésenként kibontható, újragenerálható példa a tipikus hibával és az előfeltétel-leckék linkjével | kész |
 | Felolvasás gomb (a böngésző magyar hangjával, ha van) | kész |
 | Hibajelentés: a feladat azonosítója helyben tárolódik, a Beállításokból kimásolható | kész |
-| Automatikus tesztek: 184 800 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
+| Automatikus tesztek: 189 200 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
 
 ### Témák
 
@@ -73,6 +73,7 @@ js/content18.js   18. tartalomcsomag: 21 új téma, és magyarázat az alsó tag
 js/content19.js   19. tartalomcsomag: magyarázat a felső tagozat és a középszint összes maradék leckéjéhez, 14 új téma
 js/content20.js   20. tartalomcsomag: magyarázat az emelt szint és az egyetemi ösvények maradék leckéihez (ezzel minden lecke részletes), 7 új téma
 js/content21.js   21. csomag: 17 új feladatváltozat a kevés változatot adó témákhoz; az azonos szintű változatok kezdettől váltakoznak
+js/content22.js   22. csomag: 11 újabb feladatváltozat
 TANTERV.md        a bővítés útiterve (a teljes témalista)
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák

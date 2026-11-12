@@ -502,10 +502,14 @@
       for (var i = 0; i < els.length; i++) A.ui.fields[els[i].getAttribute('data-field')] = els[i].value;
     };
     var render = function () {
+      /* A képernyő újrarajzolásakor a görgethető rész is újra létrejön, ezért a görgetési helyzetet
+         megjegyezzük, és ugyanazon a képernyőn visszaállítjuk. Csak új képernyőnél, új leckénél vagy új feladatnál ugrunk a tetejére. */
+      var old = document.getElementById('main'), oldTop = old ? old.scrollTop : 0, oldWin = window.pageYOffset || 0;
       root.innerHTML = A.view();
-      var key = A.ui.screen + ':' + (A.ui.sess ? A.ui.sess.i : '');
+      var key = A.ui.screen + ':' + (A.ui.screen === 'lecke' || A.ui.screen === 'gyak' ? A.ui.topic : '') + ':' + (A.ui.sess ? A.ui.sess.i : '');
       var main = document.getElementById('main');
-      if (key !== lastKey && main) main.scrollTop = 0;
+      if (main) main.scrollTop = key === lastKey ? oldTop : 0;
+      if (key === lastKey) { if (window.pageYOffset !== oldWin) window.scrollTo(0, oldWin); } else window.scrollTo(0, 0);
       lastKey = key;
       var fb = root.querySelector('.fb[role="status"], .in-err');
       if (fb && fb.scrollIntoView) fb.scrollIntoView({ block: 'nearest' });
