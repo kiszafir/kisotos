@@ -44,14 +44,14 @@
     function X(x) { return f1(L + (x - o.xmin) * sx); }
     function Y(y) { return f1(T + (o.ymax - y) * sy); }
     var xs = o.xstep || (o.deg ? 90 : xr > 24 ? 5 : xr > 12 ? 2 : 1), ys = o.ystep || (yr > 24 ? 5 : yr > 12 ? 2 : 1);
-    var gx = o.deg ? 30 : xr > 24 ? xs : 1, gy = yr > 24 ? ys : 1, grid = '', ticks = '', i;
+    var gx = o.deg ? 30 : xr > 24 ? xs : 1, gy = ys < 1 ? ys : yr > 24 ? ys : 1, grid = '', ticks = '', i;
     for (i = Math.ceil(o.xmin / gx) * gx; i <= o.xmax + 1e-9; i += gx) {
       grid += 'M' + X(i) + ' ' + T + 'V' + (H - B);
       if (Math.abs(i / xs - Math.round(i / xs)) < 1e-9 && i !== 0) ticks += '<text class="f-tick" x="' + X(i) + '" y="' + (H - 7) + '" text-anchor="middle">' + KO.num(i) + (o.deg ? '°' : '') + '</text>';
     }
     for (i = Math.ceil(o.ymin / gy) * gy; i <= o.ymax + 1e-9; i += gy) {
       grid += 'M' + L + ' ' + Y(i) + 'H' + (W - R);
-      if (Math.abs(i / ys - Math.round(i / ys)) < 1e-9 && i !== 0) ticks += '<text class="f-tick" x="' + (L - 5) + '" y="' + (Y(i) + 4) + '" text-anchor="end">' + KO.num(i) + '</text>';
+      if (Math.abs(i / ys - Math.round(i / ys)) < 1e-9 && i !== 0) ticks += '<text class="f-tick" x="' + (L - 5) + '" y="' + (Y(i) + 4) + '" text-anchor="end">' + KO.num(Math.round(i * 1e6) / 1e6) + '</text>';
     }
     var axes = '', x0 = o.xmin <= 0 && o.xmax >= 0, y0 = o.ymin <= 0 && o.ymax >= 0;
     if (y0) axes += 'M' + L + ' ' + Y(0) + 'H' + (W - R + 6) + 'M' + (W - R + 6) + ' ' + Y(0) + 'l-6 -4M' + (W - R + 6) + ' ' + Y(0) + 'l-6 4';

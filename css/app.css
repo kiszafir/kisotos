@@ -273,6 +273,7 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .solfig { margin-top: 10px; display: flex; justify-content: center; }
 
 .f-rect { fill: var(--ok-t); fill-opacity: .16; stroke: var(--ok-t); stroke-width: 1.5; }
+.f-rect.c { fill: var(--line); fill-opacity: .5; stroke: var(--ink2); }
 .c-face { fill: var(--card); stroke: var(--ink); stroke-width: 3; }
 .c-tick { stroke: var(--ink2); stroke-width: 1; }
 .c-tick.big { stroke: var(--ink); stroke-width: 2.5; }
@@ -283,6 +284,15 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .bx-box { fill: var(--acc-bg); stroke: var(--ink); stroke-width: 2; }
 .bx-line { stroke: var(--ink); stroke-width: 2; fill: none; }
 .bx-med { stroke: var(--acc-t); stroke-width: 3.5; }
+.d-dot { fill: var(--acc-t); opacity: .85; }
+.d-dot.hi { fill: var(--ok-t); }
+.dg-cell { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
+.dg-cell.hi { fill: var(--hl); }
+.dg-n { font-size: 13px; fill: var(--ink2); }
+.dg-n.hi { fill: var(--ink); font-weight: 700; }
+.ft-p { fill: var(--acc-t); }
+.ft-p.hi { fill: var(--ok-t); }
+.g-seg.grid { stroke: var(--line); stroke-width: 1; }
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }

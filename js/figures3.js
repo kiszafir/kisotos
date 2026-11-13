@@ -48,4 +48,36 @@
     T((A[0] + B[0]) / 2, A[1] + 20, o.la || ''); T(C[0] + 6, (C[1] + A[1]) / 2 + 14, o.lm || '', 'start'); T(B[0] + dx / 2 + 10, B[1] + dy / 2 + 10, o.lh || '', 'start');
     return '<svg class="fig solid" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Háromszög alapú hasáb') + '">' + out + lab + '</svg>';
   };
+  /* Pöttyös tömb: { rows, cols } – a szorzás szemléltetése. */
+  KO.fig.dots = function (o) {
+    var cell = Math.min(28, 300 / o.cols, 200 / o.rows), W = o.cols * cell + 20, H = o.rows * cell + 20, out = '', i, j;
+    for (i = 0; i < o.rows; i++) for (j = 0; j < o.cols; j++) out += '<circle class="d-dot' + (o.hiRow === i ? ' hi' : '') + '" cx="' + f1(10 + (j + 0.5) * cell) + '" cy="' + f1(10 + (i + 0.5) * cell) + '" r="' + f1(cell * 0.33) + '"></circle>';
+    return '<svg class="fig dots" viewBox="0 0 ' + f1(W) + ' ' + f1(H) + '" role="img" aria-label="' + esc(o.alt || o.rows + ' sor, soronként ' + o.cols + ' pötty') + '">' + out + '</svg>';
+  };
+
+  /* Két kocka összegtáblázata: { hi: összeg } – a kedvező mezők kiemelve. */
+  KO.fig.dicegrid = function (o) {
+    var c = 34, L = 30, T = 28, W = L + 6 * c + 6, H = T + 6 * c + 6, out = '', i, j;
+    for (i = 1; i <= 6; i++) {
+      out += '<text class="f-lab" x="' + (L + (i - 0.5) * c) + '" y="' + (T - 9) + '" text-anchor="middle">' + i + '</text><text class="f-lab" x="' + (L - 10) + '" y="' + (T + (i - 0.5) * c + 5) + '" text-anchor="middle">' + i + '</text>';
+      for (j = 1; j <= 6; j++) {
+        var hit = o.hi === i + j || (o.test && o.test(i, j));
+        out += '<rect class="dg-cell' + (hit ? ' hi' : '') + '" x="' + (L + (j - 1) * c) + '" y="' + (T + (i - 1) * c) + '" width="' + c + '" height="' + c + '"></rect><text class="dg-n' + (hit ? ' hi' : '') + '" x="' + (L + (j - 0.5) * c) + '" y="' + (T + (i - 0.5) * c + 5) + '" text-anchor="middle">' + (i + j) + '</text>';
+      }
+    }
+    return '<svg class="fig dicegrid" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'A két kockával dobott számok összegei') + '">' + out + '</svg>';
+  };
+
+  /* Prímtényezős felbontás „létrája”: { n } – mindig a legkisebb prímmel osztunk. */
+  KO.fig.ftree = function (o) {
+    var steps = [], n = o.n, p = 2;
+    while (n > 1) { while (n % p) p++; steps.push([n, p]); n /= p; }
+    var row = 26, W = 220, H = 16 + (steps.length + 1) * row, out = '<path class="f-axis" d="M110 8V' + (H - 8) + '"></path>', i;
+    steps.forEach(function (st, k) {
+      var y = 24 + k * row;
+      out += '<text class="f-lab" x="100" y="' + y + '" text-anchor="end">' + st[0] + '</text><text class="f-lab ft-p' + (o.hi === st[1] ? ' hi' : '') + '" x="120" y="' + y + '">' + st[1] + '</text>';
+    });
+    out += '<text class="f-lab" x="100" y="' + (24 + steps.length * row) + '" text-anchor="end">1</text>';
+    return '<svg class="fig ftree" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Prímtényezős felbontás') + '">' + out + '</svg>';
+  };
 })(globalThis.KO = globalThis.KO || {});
