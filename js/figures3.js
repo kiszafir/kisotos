@@ -108,4 +108,15 @@
     out += '<text class="f-lab" x="' + (x - 22) + '" y="' + (top + 4) + '" text-anchor="end">°C</text>';
     return '<svg class="fig thermo" viewBox="0 0 240 ' + H + '" role="img" aria-label="' + esc(o.alt || 'Hőmérő') + '">' + out + '</svg>';
   };
+  /* Csonkakúp: { lR, lr, lm } – alsó és felső sugár, magasság feliratokkal. */
+  KO.fig.frustum = function (o) {
+    var W = 320, H = 210, cx = 160, yb = 170, yt = 60, R = 95, r = 50, ry = 18, ry2 = 10, out = '', lab = '';
+    function T(x, y, t, a) { lab += '<text class="f-lab" x="' + f1(x) + '" y="' + f1(y) + '" text-anchor="' + (a || 'middle') + '">' + esc(t) + '</text>'; }
+    out += '<path class="s-face" d="M' + (cx - R) + ' ' + yb + 'L' + (cx - r) + ' ' + yt + 'A' + r + ' ' + ry2 + ' 0 0 1 ' + (cx + r) + ' ' + yt + 'L' + (cx + R) + ' ' + yb + 'A' + R + ' ' + ry + ' 0 0 1 ' + (cx - R) + ' ' + yb + 'Z"></path>' +
+      '<ellipse class="s-face t" cx="' + cx + '" cy="' + yt + '" rx="' + r + '" ry="' + ry2 + '"></ellipse>' +
+      '<path class="s-hid" d="M' + (cx - R) + ' ' + yb + 'A' + R + ' ' + ry + ' 0 0 1 ' + (cx + R) + ' ' + yb + 'M' + cx + ' ' + yb + 'H' + (cx + R) + 'M' + cx + ' ' + yt + 'H' + (cx + r) + 'M' + cx + ' ' + yb + 'V' + yt + '"></path>' +
+      '<circle class="f-pt" cx="' + cx + '" cy="' + yb + '" r="3"></circle>';
+    T(cx + R / 2, yb + ry + 16, o.lR || ''); T(cx + r + 8, yt + 4, o.lr || '', 'start'); T(cx - 6, (yb + yt) / 2 + 4, o.lm || '', 'end');
+    return '<svg class="fig solid" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Csonkakúp') + '">' + out + lab + '</svg>';
+  };
 })(globalThis.KO = globalThis.KO || {});
