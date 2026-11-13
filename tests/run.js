@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -820,6 +820,46 @@ var verify = {
   },
   szintvonal: function (t) { var d = t.data; return t.answer === (d.kind ? d.R : d.R * d.R) && (d.kind || t.fig.fns[0].r === d.R); },
   empirikus: function (t) { var d = t.data, c = d.xs.filter(function (v) { return v <= d.x; }).length; return t.answer.n * d.xs.length === c * t.answer.d && reduced(t.answer); },
+  irasbeliszor2: function (t) { return t.answer === t.data.a * t.data.b && t.data.b >= 10; },
+  irasbeliosztas2: function (t) { return t.answer * t.data.d === t.data.N && t.data.d >= 10; },
+  kockahalo: function (t) {
+    /* Független ellenőrzés: a hálót a kocka köré „csomagoljuk” 3D-ben, és megnézzük a lapok normálvektorait. */
+    var cells = t.data.cells, lab = t.data.lab, n = cells.length, idx = {}, i;
+    cells.forEach(function (c, k) { idx[c[0] + ',' + c[1]] = k; });
+    var frame = []; frame[0] = { n: [0, 0, -1], e: [1, 0, 0], s: [0, 1, 0] };
+    var queue = [0], seen = { 0: true };
+    function neg(v) { return [-v[0], -v[1], -v[2]]; }
+    while (queue.length) {
+      var k = queue.shift(), c = cells[k], f = frame[k];
+      [[1, 0, 'e'], [-1, 0, 'w'], [0, 1, 's'], [0, -1, 'nn']].forEach(function (d) {
+        var j = idx[(c[0] + d[0]) + ',' + (c[1] + d[1])]; if (j === undefined || seen[j]) return;
+        var g;
+        if (d[2] === 'e') g = { n: f.e, e: neg(f.n), s: f.s };
+        else if (d[2] === 'w') g = { n: neg(f.e), e: f.n, s: f.s };
+        else if (d[2] === 's') g = { n: f.s, e: f.e, s: neg(f.n) };
+        else g = { n: neg(f.s), e: f.e, s: f.n };
+        frame[j] = g; seen[j] = true; queue.push(j);
+      });
+    }
+    var key = function (v) { return v.join(','); }, normals = frame.map(function (f) { return key(f.n); });
+    if (normals.filter(function (v, k) { return normals.indexOf(v) === k; }).length !== 6 || n !== 6) return false;
+    var i1 = lab.indexOf(1), opp = key(neg(frame[i1].n));
+    return lab[normals.indexOf(opp)] === t.answer;
+  },
+  masodfokurendszer: function (t) { var d = t.data, v = ints(t.answer), x = v[0], y = v[1]; return v.length === 2 && y === x * x && y === d.m * x + d.b && x === Math.max(d.r1, d.r2) && d.r1 !== d.r2; },
+  gyujtojaradek: function (t) { var d = t.data, q = 1 + d.p / 100, S = d.A * q * (Math.pow(q, d.n) - 1) / (q - 1); return Math.abs(S - t.answer) < 0.5; },
+  addicio: function (t) {
+    var d = t.data, a = Math.asin(d.sa[0] / d.sa[1]), b = Math.asin(d.sb[0] / d.sb[1]);
+    var v = [Math.sin(a + b), Math.sin(a - b), Math.cos(a + b), Math.cos(a - b)][d.what];
+    return Math.abs(v - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer) && Math.abs(d.ca[0] / d.ca[1] - Math.cos(a)) < 1e-12;
+  },
+  ivhossz: function (t) { var a = t.data.a, N = 20000, h = a / N, s = 0, i; for (i = 0; i < N; i++) { var x = (i + 0.5) * h; s += Math.sqrt(1 + x) * h; } return Math.abs(s - t.answer.n / t.answer.d) < 1e-6; },
+  rendorelv: function (t) { var d = t.data, n = 1e7, g = d.f === 'sin n' ? Math.sin(n) : d.f === 'cos n' ? Math.cos(n) : 1, v = (d.a * n + d.c * g) / (d.b * n); return Math.abs(v - t.answer.n / t.answer.d) < 1e-5 && reduced(t.answer); },
+  leibniz: function (t) {
+    var d = t.data, p = d.p, absConv = p > 1, termsToZero = p > 0;
+    var cls = absConv ? 'abszolút konvergens' : d.alt && termsToZero ? 'feltételesen konvergens' : 'divergens';
+    return cls === t.answer;
+  },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };

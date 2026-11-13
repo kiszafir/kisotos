@@ -20,6 +20,7 @@
       return '<span class="frac" role="img" aria-label="' + KO.fracName(n, d) + '"><span>' + n + '</span><span>' + d + '</span></span>';
     });
     s = s.replace(/√\(([^)]+)\)/g, '√<span class="rad">$1</span>');
+    s = s.replace(/\^\(([^()]+)\)/g, '<sup>$1</sup>');
     s = s.replace(/\^(\d+|[a-z])/g, '<sup>$1</sup>');
     return s;
   };

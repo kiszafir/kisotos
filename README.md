@@ -16,19 +16,19 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Három hangulat (Felfedező, Tanuló, Fókusz), fehér és fekete mód (a fejlécben egy gombbal váltható), „kevesebb zsúfoltság” mód | kész |
 | Ma, Ösvény, Lecke, Gyakorlás, Tudástérkép, Beállítások képernyő | kész |
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
-| 451 téma leckével, 511 feladatgenerátor (minden feladat új számokkal jön) | kész |
-| Ábrák: 198 feladattípusnál rajz a feladat mellett vagy a megoldás után, 148 leckében szemléltető ábra (síkidomok, testek, függvénygrafikonok, számegyenes, Venn-diagram, oszlop- és kördiagram, analóg óra, dobozábra, súlyozott gráf, egységkör, haranggörbe, pöttyös tömb, kockatáblázat, prímtényezős létra, lépcsős sűrűségfüggvény, szögmérő, út–idő grafikon, szakadásos függvény, hőmérő, szimmetriatengelyek, empirikus eloszlásfüggvény) | kész |
+| 460 téma leckével, 520 feladatgenerátor (minden feladat új számokkal jön) | kész |
+| Ábrák: 204 feladattípusnál rajz a feladat mellett vagy a megoldás után, 154 leckében szemléltető ábra (síkidomok, testek, függvénygrafikonok, számegyenes, Venn-diagram, oszlop- és kördiagram, analóg óra, dobozábra, súlyozott gráf, egységkör, haranggörbe, pöttyös tömb, kockatáblázat, prímtényezős létra, lépcsős sűrűségfüggvény, szögmérő, út–idő grafikon, szakadásos függvény, hőmérő, szimmetriatengelyek, empirikus eloszlásfüggvény) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
 | Javítás hibatípus szerint (100 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
 | Tudásszint témánként, térköz-ismétlés, gyökérok-keresés az előfeltételek között, ajánló | kész |
 | Minden leckében lépésenként kibontható, újragenerálható példa a tipikus hibával és az előfeltétel-leckék linkjével | kész |
 | Felolvasás gomb (a böngésző magyar hangjával, ha van) | kész |
 | Hibajelentés: a feladat azonosítója helyben tárolódik, a Beállításokból kimásolható | kész |
-| Automatikus tesztek: 204 400 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
+| Automatikus tesztek: 208 000 legenerált feladat független újraszámolása, képernyők végigjárása | kész |
 
 ### Témák
 
-Hét ösvény van: alsó tagozat (75 téma), felső tagozat (86), középszintű érettségi (89), emelt szintű érettségi (49), egyetemi matek 1 (53), egyetemi matek 2 (49), egyetemi matek 3 (50). Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. Ugyanitt név szerint keresni lehet a témák között (ékezet nélkül is), és minden témakörből indítható vegyes gyakorlás, amely a témakör több témájából ad egy-egy feladatot. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
+Hét ösvény van: alsó tagozat (77 téma), felső tagozat (87), középszintű érettségi (91), emelt szintű érettségi (50), egyetemi matek 1 (56), egyetemi matek 2 (49), egyetemi matek 3 (50). Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. Ugyanitt név szerint keresni lehet a témák között (ékezet nélkül is), és minden témakörből indítható vegyes gyakorlás, amely a témakör több témájából ad egy-egy feladatot. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
 
 - **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok, számok összehasonlítása, számsorozatok, kétjegyű kivonás, maradékos osztás, szorzás kerek tízesekkel, tízesek és egyesek, hiányzó tényező, óra és perc, négyzet, kerek százasok
 - **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás, prímszámok, mennyiség törtrésze, átlag, egyenes arányosság, háromszög szögei, zárójeles egyenlet, tizedes törtek szorzása 10-zel és 100-zal, koordináta-rendszer, kocka, leárazás, Pitagorasz-tétel
@@ -81,6 +81,7 @@ js/content25.js   25. csomag: újabb ábrák, 4 új téma (terület négyzetrác
 js/content26.js   26. csomag: újabb ábrák, 4 új téma (síkidomok, szögmérés, vektorok az ábráról, integrál a grafikonról)
 js/content27.js   27. csomag: újabb ábrák, 4 új téma (színezett rész, mozgás grafikonja, átlag oszlopdiagramról, határérték a grafikonról)
 js/content28.js   28. csomag: a tanterv hiányzó témái ábrákkal (hőmérő, testek, szimmetria, alapalakzatok, kör részei, háromszögfajták, középpontos tükrözés, harmadolópont, parabola fókusza, szintvonal, empirikus eloszlásfüggvény)
+js/content29.js   29. csomag: írásbeli műveletek kétjegyű számmal, kockaháló, másodfokú egyenletrendszer, gyűjtőjáradék, addíciós tételek, ívhossz, rendőrelv, Leibniz-kritérium
 TANTERV.md        a bővítés útiterve (a teljes témalista)
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák
