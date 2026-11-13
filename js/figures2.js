@@ -12,6 +12,7 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   function f1(v) { return +v.toFixed(1); }
+  KO.figEsc = esc;
   var uid = 0;
 
   /* ---------- Függvények kiértékelése ---------- */
@@ -62,6 +63,9 @@
       for (k = 0; k <= n; k++) { x = a.x1 + (a.x2 - a.x1) * k / n; d += (k ? 'L' : 'M') + X(x) + ' ' + Y(KO.fnEval(a.fn, x)); }
       for (k = n; k >= 0; k--) { x = a.x1 + (a.x2 - a.x1) * k / n; d += 'L' + X(x) + ' ' + Y(a.fn2 ? KO.fnEval(a.fn2, x) : 0); }
       body += '<path class="f-area" d="' + d + 'Z"></path>';
+    });
+    (o.rects || []).forEach(function (q) {
+      body += '<path class="f-rect' + (q.cls ? ' ' + q.cls : '') + '" d="M' + X(q.x1) + ' ' + Y(0) + 'V' + Y(q.y) + 'H' + X(q.x2) + 'V' + Y(0) + 'Z"></path>';
     });
     (o.fns || []).forEach(function (fn) {
       if (fn.k === 'circle') { body += '<ellipse class="f-curve' + (fn.cls ? ' ' + fn.cls : '') + '" cx="' + X(fn.u) + '" cy="' + Y(fn.v) + '" rx="' + f1(fn.r * sx) + '" ry="' + f1(fn.r * sy) + '"></ellipse>'; return; }

@@ -272,6 +272,17 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .s-diag { fill: none; stroke: var(--err-t); stroke-width: 2.5; }
 .solfig { margin-top: 10px; display: flex; justify-content: center; }
 
+.f-rect { fill: var(--ok-t); fill-opacity: .16; stroke: var(--ok-t); stroke-width: 1.5; }
+.c-face { fill: var(--card); stroke: var(--ink); stroke-width: 3; }
+.c-tick { stroke: var(--ink2); stroke-width: 1; }
+.c-tick.big { stroke: var(--ink); stroke-width: 2.5; }
+.c-num { font-size: 15px; font-weight: 700; fill: var(--ink); }
+.c-h { stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+.c-m { stroke: var(--acc-t); stroke-width: 3.5; stroke-linecap: round; }
+.c-mid { fill: var(--ink); }
+.bx-box { fill: var(--acc-bg); stroke: var(--ink); stroke-width: 2; }
+.bx-line { stroke: var(--ink); stroke-width: 2; fill: none; }
+.bx-med { stroke: var(--acc-t); stroke-width: 3.5; }
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }
