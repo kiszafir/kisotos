@@ -31,6 +31,7 @@
       case 'norm': return (fn.a || 1) * Math.exp(-(x - fn.mu) * (x - fn.mu) / (2 * fn.s * fn.s));
       case 'mirror': return KO.fnEval(fn.src, -x);
       case 'neg': return -KO.fnEval(fn.src, x);
+      case 'pw': { var P = fn.pts, i; if (x < P[0][0] || x > P[P.length - 1][0]) return NaN; for (i = 1; i < P.length; i++) if (x <= P[i][0]) return P[i - 1][1] + (P[i][1] - P[i - 1][1]) * (x - P[i - 1][0]) / (P[i][0] - P[i - 1][0]); return NaN; }
       default: return NaN;
     }
   };

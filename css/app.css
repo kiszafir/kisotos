@@ -293,6 +293,12 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .ft-p { fill: var(--acc-t); }
 .ft-p.hi { fill: var(--ok-t); }
 .g-seg.grid { stroke: var(--line); stroke-width: 1; }
+.pr-body { fill: var(--acc-bg); stroke: var(--ink); stroke-width: 2; }
+.pr-out { font-size: 12px; font-weight: 700; fill: var(--ink); }
+.pr-in { font-size: 10px; fill: var(--ink2); }
+.pr-base { stroke: var(--ink); stroke-width: 2; }
+.pr-ray { stroke: var(--ok-t); stroke-width: 3; stroke-linecap: round; }
+.g-poly.ghost { stroke: none; }
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }

@@ -80,4 +80,18 @@
     out += '<text class="f-lab" x="100" y="' + (24 + steps.length * row) + '" text-anchor="end">1</text>';
     return '<svg class="fig ftree" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Prímtényezős felbontás') + '">' + out + '</svg>';
   };
+  /* Szögmérő a mért szöggel: { deg } – külső skála jobbról, belső balról indul. */
+  KO.fig.protractor = function (o) {
+    var W = 320, H = 190, c = [160, 166], R = 140, out = '', i;
+    function pt(r, a) { var t = a * Math.PI / 180; return f1(c[0] + r * Math.cos(t)) + ' ' + f1(c[1] - r * Math.sin(t)); }
+    out += '<path class="pr-body" d="M' + (c[0] - R) + ' ' + c[1] + 'A' + R + ' ' + R + ' 0 0 1 ' + (c[0] + R) + ' ' + c[1] + 'Z"></path>';
+    for (i = 0; i <= 180; i += 5) { var r1 = i % 10 ? R - 7 : R - 13; out += '<path class="c-tick' + (i % 30 ? '' : ' big') + '" d="M' + pt(r1, i) + 'L' + pt(R, i) + '"></path>'; }
+    for (i = 0; i <= 180; i += 30) {
+      var a = pt(R - 24, i).split(' '), b = pt(R - 46, i).split(' ');
+      var dy = i === 0 || i === 180 ? -8 : 4;
+      out += '<text class="pr-out" x="' + a[0] + '" y="' + (+a[1] + dy) + '" text-anchor="middle">' + i + '</text>' + (i === 0 || i === 180 ? '' : '<text class="pr-in" x="' + b[0] + '" y="' + (+b[1] + 4) + '" text-anchor="middle">' + (180 - i) + '</text>');
+    }
+    out += '<path class="pr-base" d="M' + (c[0] - R - 6) + ' ' + c[1] + 'H' + (c[0] + R + 6) + '"></path><path class="pr-ray" d="M' + c[0] + ' ' + c[1] + 'L' + pt(R + 12, o.deg) + '"></path><path class="pr-ray" d="M' + c[0] + ' ' + c[1] + 'L' + pt(R + 12, 0) + '"></path><circle class="c-mid" cx="' + c[0] + '" cy="' + c[1] + '" r="4"></circle>';
+    return '<svg class="fig protractor" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Szögmérő') + '">' + out + '</svg>';
+  };
 })(globalThis.KO = globalThis.KO || {});
