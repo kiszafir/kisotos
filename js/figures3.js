@@ -94,4 +94,18 @@
     out += '<path class="pr-base" d="M' + (c[0] - R - 6) + ' ' + c[1] + 'H' + (c[0] + R + 6) + '"></path><path class="pr-ray" d="M' + c[0] + ' ' + c[1] + 'L' + pt(R + 12, o.deg) + '"></path><path class="pr-ray" d="M' + c[0] + ' ' + c[1] + 'L' + pt(R + 12, 0) + '"></path><circle class="c-mid" cx="' + c[0] + '" cy="' + c[1] + '" r="4"></circle>';
     return '<svg class="fig protractor" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Szögmérő') + '">' + out + '</svg>';
   };
+  /* Hőmérő: { t, min, max } – 1 fokos beosztás, 5 fokonként szám. */
+  KO.fig.thermo = function (o) {
+    var mn = o.min, mx = o.max, H = 250, top = 16, bot = 196, x = 120, sy = (bot - top) / (mx - mn), out = '', i;
+    function Y(v) { return f1(bot - (v - mn) * sy); }
+    out += '<rect class="th-tube" x="' + (x - 9) + '" y="' + (top - 8) + '" width="18" height="' + (bot - top + 20) + '" rx="9"></rect><circle class="th-bulb" cx="' + x + '" cy="' + (bot + 24) + '" r="17"></circle>';
+    out += '<rect class="th-fill" x="' + (x - 4) + '" y="' + Y(o.t) + '" width="8" height="' + f1(bot + 14 - Y(o.t)) + '"></rect>';
+    for (i = mn; i <= mx; i++) {
+      var big = i % 5 === 0;
+      out += '<path class="c-tick' + (big ? ' big' : '') + '" d="M' + (x + 12) + ' ' + Y(i) + 'h' + (big ? 14 : 7) + '"></path>';
+      if (big) out += '<text class="f-tick th-n" x="' + (x + 32) + '" y="' + (+Y(i) + 4) + '">' + KO.num(i) + '</text>';
+    }
+    out += '<text class="f-lab" x="' + (x - 22) + '" y="' + (top + 4) + '" text-anchor="end">°C</text>';
+    return '<svg class="fig thermo" viewBox="0 0 240 ' + H + '" role="img" aria-label="' + esc(o.alt || 'Hőmérő') + '">' + out + '</svg>';
+  };
 })(globalThis.KO = globalThis.KO || {});

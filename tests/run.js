@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -785,6 +785,41 @@ var verify = {
     if (d.ask === 3) return t.answer === (d.L === d.R ? 'Létezik, értéke ' + KO.num(d.L) + '.' : 'Nem létezik.');
     return t.answer === [d.L, d.R, d.fv][d.ask];
   },
+  homero: function (t) { var d = t.data; return t.fig.t === d.t && t.answer === (d.kind ? d.t + d.d : d.t) && t.answer >= t.fig.min && t.answer <= t.fig.max && d.t !== 0; },
+  testnev: function (t) { var f = t.fig, n = f.k === 'box' ? (f.a === f.b && f.b === f.c ? 'kocka' : 'téglatest') : { cyl: 'henger', sphere: 'gömb', cone: 'kúp', pyr: 'gúla' }[f.k]; return n === t.answer; },
+  szimmetriatengely: function (t) {
+    var p = t.fig.items[0].p, n = p.length, cnt = 0, a;
+    for (a = 0; a < 180; a += 1) {
+      var th = a * Math.PI / 180, c = Math.cos(2 * th), s2 = Math.sin(2 * th);
+      var refl = p.map(function (q) { return [q[0] * c + q[1] * s2, q[0] * s2 - q[1] * c]; });
+      if (refl.every(function (q) { return p.some(function (z) { return Math.abs(z[0] - q[0]) < 1e-6 && Math.abs(z[1] - q[1]) < 1e-6; }); })) cnt++;
+    }
+    return cnt === t.answer && n >= 3;
+  },
+  geoalap: function (t) {
+    var it = t.fig.items, segs = it.filter(function (q) { return q.k === 'seg'; }).length, heads = it.filter(function (q) { return q.cls === 'arrowhead'; }).length, dots = it.filter(function (q) { return q.k === 'dot'; }).length;
+    var k = segs === 0 ? 0 : heads === 0 ? 1 : heads === 1 ? 2 : 3;
+    return ['pont', 'szakasz', 'félegyenes', 'egyenes'][k] === t.answer && (k !== 1 || dots === 2) && (k !== 2 || dots === 1) && (k !== 3 || dots === 0);
+  },
+  korreszei: function (t) {
+    var it = t.fig.items, hl = it.filter(function (q) { return q.cls === 'hl' || q.cls === 'hi'; })[0], on = function (p) { return Math.abs(Math.hypot(p[0], p[1]) - 1) < 1e-9; }, ctr = function (p) { return Math.hypot(p[0], p[1]) < 1e-9; };
+    var k = hl.k === 'sector' ? 'körcikk' : hl.k === 'poly' ? 'körív' : ctr(hl.a) && on(hl.b) ? 'sugár' : on(hl.a) && on(hl.b) ? (Math.abs(hl.a[0] + hl.b[0]) < 1e-9 && Math.abs(hl.a[1] + hl.b[1]) < 1e-9 ? 'átmérő' : 'húr') : 'érintő';
+    return k === t.answer;
+  },
+  haromszogfajta: function (t) {
+    var d = t.data;
+    if (d.side) { var s = d.s, e = (s[0] === s[1]) + (s[1] === s[2]) + (s[0] === s[2]); return t.answer === (e === 3 ? 'egyenlő oldalú' : e === 1 ? 'egyenlő szárú' : 'általános') && s[0] + s[1] > s[2] && s[0] + s[2] > s[1] && s[1] + s[2] > s[0]; }
+    var a = d.ang, m = Math.max.apply(null, a); return a[0] + a[1] + a[2] === 180 && a.every(function (x) { return x > 0; }) && t.answer === (m < 90 ? 'hegyesszögű' : m === 90 ? 'derékszögű' : 'tompaszögű');
+  },
+  kozeppontos: function (t) { var d = t.data, v = ints(t.answer); return v.length === 2 && (v[0] + d.x) === 2 * d.a && (v[1] + d.y) === 2 * d.b; },
+  harmadolo: function (t) { var d = t.data, v = ints(t.answer); return v.length === 2 && 3 * v[0] === 2 * d.x1 + d.x2 && 3 * v[1] === 2 * d.y1 + d.y2; },
+  parabolafokusz: function (t) {
+    var d = t.data, a = 1 / (4 * d.p), F = [0, d.p], dir = -d.p;
+    var ok1 = [1, 2, 5].every(function (x) { var y = a * x * x; return Math.abs(Math.hypot(x - F[0], y - F[1]) - (y - dir)) < 1e-9; });
+    return ok1 && t.answer === (d.ask === 'F' ? d.p : -d.p) && t.math.indexOf('[[1/' + 4 * d.p + ']]') >= 0;
+  },
+  szintvonal: function (t) { var d = t.data; return t.answer === (d.kind ? d.R : d.R * d.R) && (d.kind || t.fig.fns[0].r === d.R); },
+  empirikus: function (t) { var d = t.data, c = d.xs.filter(function (v) { return v <= d.x; }).length; return t.answer.n * d.xs.length === c * t.answer.d && reduced(t.answer); },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
