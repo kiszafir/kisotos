@@ -51,7 +51,7 @@
   /* Pöttyös tömb: { rows, cols } – a szorzás szemléltetése. */
   KO.fig.dots = function (o) {
     var cell = Math.min(28, 300 / o.cols, 200 / o.rows), W = o.cols * cell + 20, H = o.rows * cell + 20, out = '', i, j;
-    for (i = 0; i < o.rows; i++) for (j = 0; j < o.cols; j++) out += '<circle class="d-dot' + (o.hiRow === i ? ' hi' : '') + '" cx="' + f1(10 + (j + 0.5) * cell) + '" cy="' + f1(10 + (i + 0.5) * cell) + '" r="' + f1(cell * 0.33) + '"></circle>';
+    for (i = 0; i < o.rows; i++) for (j = 0; j < o.cols; j++) if (!o.n || i * o.cols + j < o.n) out += '<circle class="d-dot' + (o.hiRow === i ? ' hi' : '') + '" cx="' + f1(10 + (j + 0.5) * cell) + '" cy="' + f1(10 + (i + 0.5) * cell) + '" r="' + f1(cell * 0.33) + '"></circle>';
     return '<svg class="fig dots" viewBox="0 0 ' + f1(W) + ' ' + f1(H) + '" role="img" aria-label="' + esc(o.alt || o.rows + ' sor, soronként ' + o.cols + ' pötty') + '">' + out + '</svg>';
   };
 
