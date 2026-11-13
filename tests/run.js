@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -698,6 +698,28 @@ var verify = {
     var d = t.data, hh = 1e-6, y = function (x) { return Math.sqrt((d.R - d.A * x * x) / d.B); }, sl = (y(d.x0 + hh) - y(d.x0 - hh)) / (2 * hh);
     return d.A * d.x0 * d.x0 + d.B * d.y0 * d.y0 === d.R && Math.abs(Math.abs(sl) - t.answer.n / t.answer.d) < 1e-5 && (sl < 0) === d.neg && reduced(t.answer);
   },
+  diagramalso: function (t) { var d = t.data, v = d.vals, s = 0; v.forEach(function (x) { s += x; }); return t.answer === [v[d.i1], v[d.i1] - v[d.i2], s][d.kind] && t.fig.values.join() === v.join(); },
+  oszlopdiagram: function (t) { var v = t.fig.values, s = 0; v.forEach(function (x) { s += x; }); return t.answer === [s, s / v.length, Math.max.apply(null, v) - Math.min.apply(null, v)][t.data.kind]; },
+  grafertek: function (t) { var d = t.data, fn = d.fn, y = fn.k === 'lin' ? fn.m * d.x0 + fn.b : fn.k === 'quad' ? fn.a * d.x0 * d.x0 + fn.b * d.x0 + fn.c : fn.a * Math.abs(d.x0 - fn.u) + fn.v; return t.answer === y && t.fig.fns[0] === fn && y >= t.fig.ymin && y <= t.fig.ymax; },
+  fvtukrozes: function (t) { var d = t.data, fn = d.fn, f = function (x) { return fn.k === 'lin' ? fn.m * x + fn.b : fn.k === 'quad' ? fn.a * x * x + fn.b * x + fn.c : fn.a * Math.abs(x - fn.u) + fn.v; }; return t.answer === (d.kind === 0 ? -f(d.x0) : f(-d.x0)); },
+  fveltolas: function (t) { var d = t.data, g = t.fig.fns[1], f = function (x) { return g.a * x * x + g.b * x + g.c; }, vx = -g.b / (2 * g.a); return t.answer === (d.askU ? vx : f(vx)) && f(vx - 1) === f(vx + 1); },
+  intervallum: function (t) {
+    var d = t.data, rg = t.fig.ranges[0], m = /^x (≥|>|≤|<) (.+)$/.exec(t.answer), x = ints(m[2])[0];
+    var right = rg.to === null, closed = right ? !rg.fromOpen : !rg.toOpen;
+    return x === d.a && (right ? rg.from : rg.to) === x && m[1] === (right ? (closed ? '≥' : '>') : (closed ? '≤' : '<'));
+  },
+  trigfv: function (t) {
+    var d = t.data, fn = t.fig.fns[0], mx = -Infinity, firstZero = null;
+    for (var x = 0; x <= 360; x++) { var y = KO.fnEval(fn, x); mx = Math.max(mx, y); if (x > 0 && firstZero === null && Math.abs(y) < 1e-9 && x > 0) firstZero = x; }
+    return d.askAmp ? Math.abs(mx - t.answer) < 1e-9 : firstZero !== null && Math.abs(2 * firstZero - t.answer) < 1e-9;
+  },
+  expgraf: function (t) { var d = t.data, pt = t.fig.pts[0]; return pt.x === 1 && Math.abs(Math.pow(pt.y, d.k) - t.answer) < 1e-9 && Math.abs(KO.fnEval(t.fig.fns[0], 1) - pt.y) < 1e-9; },
+  grafmegoldas: function (t) {
+    var d = t.data, fn = t.fig.fns[0], f = function (x) { return KO.fnEval(fn, x); }, c = 0;
+    var roots = []; for (var x = -6; x <= 6; x += 0.001) { var a = f(x) - d.c, b = f(x + 0.001) - d.c; if (Math.abs(a) < 1e-9 || a * b < 0) roots.push(x); }
+    var uniq = []; roots.forEach(function (r) { if (!uniq.length || r - uniq[uniq.length - 1] > 0.05) uniq.push(r); }); c = uniq.length;
+    return t.answer === c;
+  },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
@@ -707,7 +729,7 @@ function sumCheck(t) {
 }
 
 var SEEDS = 400, perGen = {};
-Object.keys(KO.gens).forEach(function (id) {
+Object.keys(KO.gens).filter(function (id) { return !process.env.KO_ONLY || process.env.KO_ONLY.split(",").indexOf(id) >= 0; }).forEach(function (id) {
   ok(typeof verify[id] === 'function', id + ': nincs független ellenőrző');
   ok(!!KO.topics[KO.gens[id].topic], id + ': ismeretlen téma');
   var variants = {};
@@ -732,8 +754,12 @@ Object.keys(KO.gens).forEach(function (id) {
     }
     var all = [t.prompt, t.math || '', t.solution].concat(t.tips, t.wrongs.map(function (w) { return w.fb; }), t.wrongs.map(function (w) { return KO.show(w.v, t.vtype); })).join(' | ');
     ok(!/undefined|NaN|(^|[^a-záéíóöőúüű])null([^a-záéíóöőúüű]|$)|\[object|--|\+ −|− −|\d\.\d/.test(all), tag + 'hibás szöveg: ' + all.slice(0, 160));
-    var html = KO.math(all) + KO.figure(t.fig);
-    ok(html.indexOf('[[') < 0 && !/undefined|NaN/.test(html), tag + 'a megjelenítés hibás');
+    var html = KO.math(all) + KO.figure(t.fig) + KO.figure(t.solfig);
+    ok(html.indexOf('[[') < 0 && !/undefined|NaN|Infinity/.test(html), tag + 'a megjelenítés hibás');
+    if (t.fig) ok(KO.figure(t.fig).length > 80, tag + 'üres ábra');
+    if (t.solfig) ok(KO.figure(t.solfig).length > 80, tag + 'üres megoldásábra');
+    if (t.fig && KO.gens[id].figured && t.vtype !== 'text') { var fh = KO.figure(t.fig), as = String(KO.show(t.answer, t.vtype)); var inData = Object.keys(t.data || {}).some(function (k) { return String(t.data[k]) === String(t.answer); }); ok(as.length < 2 || inData || !new RegExp('class="f-lab[^"]*"[^>]*>(m = )?' + as + '( cm)?<').test(fh), tag + 'a feladat ábráján nem szerepelhet a válasz felirata'); }
+    if (process.env.KO_PROGRESS && s === 1) console.error('generátor: ' + id);
   }
   perGen[id] = Object.keys(variants).length;
 });

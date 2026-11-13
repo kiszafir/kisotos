@@ -247,7 +247,7 @@
 
     var e = s.res && s.res.err ? KO.errs[s.res.err] : null, last = s.i === s.ids.length - 1;
     if (s.state === 'right') {
-      h += '<div class="fb ok" role="status"><div class="fb-head">' + icon('ok', 24) + '<span>' + (mood() === 'felfedezo' ? 'Ügyes!' : 'Helyes!') + '</span></div><p>' + M(t.solution) + '</p>' +
+      h += '<div class="fb ok" role="status"><div class="fb-head">' + icon('ok', 24) + '<span>' + (mood() === 'felfedezo' ? 'Ügyes!' : 'Helyes!') + '</span></div><p>' + M(t.solution) + '</p>' + (t.solfig ? '<div class="solfig">' + KO.figure(t.solfig) + '</div>' : '') +
         btn(last ? 'Befejezem a kört' : 'Következő feladat', 'kov', null, 'primary') + '</div>';
     } else if (s.state === 'almost') {
       h += '<div class="fb info" role="status"><div class="fb-head">' + icon('bulb', 24) + '<span>Majdnem kész!</span></div><p>' + M(s.res.fb) + '</p>' + btn('Javítom', 'ujra', null, 'ghost') + '</div>';
@@ -257,7 +257,7 @@
         '<div class="btn-row">' + btn(mood() === 'felfedezo' ? 'Még egyszer' : 'Újra megpróbálom', 'ujra', null, 'ghost') + btn('Megoldás', 'megoldas', null, 'ghost') + '</div></div>';
     } else if (s.state === 'shown') {
       h += '<div class="fb info" role="status"><div class="fb-head">' + icon('bulb', 24) + '<span>Megoldás lépésenként</span></div>' +
-        '<ol class="steps">' + t.tips.map(function (x) { return '<li>' + M(x) + '</li>'; }).join('') + '</ol><p><strong>Válasz:</strong> ' + M(KO.show(t.answer, t.vtype)) + '</p>' +
+        '<ol class="steps">' + t.tips.map(function (x) { return '<li>' + M(x) + '</li>'; }).join('') + '</ol><p><strong>Válasz:</strong> ' + M(KO.show(t.answer, t.vtype)) + '</p>' + (t.solfig ? '<div class="solfig">' + KO.figure(t.solfig) + '</div>' : '') +
         btn(last ? 'Befejezem a kört' : 'Következő feladat', 'kov', null, 'primary') + '</div>';
     }
     h += '<div class="foot"><span class="muted small">Programmal generált és ellenőrzött feladat.</span>' +

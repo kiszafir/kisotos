@@ -232,6 +232,46 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .grp-tools { padding: 12px 14px 0; border-top: 1px solid var(--line); }
 .grp > .grp-tools + .path { border-top: 0; padding-top: 12px; }
 
+/* Ábrák, 2. rész */
+.f-curve.b { stroke: var(--ok-t); stroke-dasharray: 7 5; }
+.f-curve.c { stroke: var(--ink2); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.f-fl { font-size: 12px; fill: var(--acc-t); }
+.f-fl.b { fill: var(--ok-t); }
+.f-fl.c { fill: var(--ink2); }
+.f-seg { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+.f-seg.a { stroke: var(--acc-t); stroke-width: 3; }
+.f-seg.b { stroke: var(--ok-t); stroke-width: 3; }
+.f-seg.dash { stroke: var(--ink2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.f-pt.open { fill: var(--card); }
+.f-area { fill: var(--acc-t); opacity: .18; stroke: none; }
+.g-poly { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.g-poly.fill { fill: var(--acc-bg); }
+.g-poly.hi { fill: var(--hl); opacity: .7; }
+.g-poly.dash { stroke-dasharray: 5 4; }
+.g-poly.line { fill: none; }
+.g-seg { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+.g-seg.dash { stroke: var(--ink2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.g-seg.a { stroke: var(--acc-t); stroke-width: 4; }
+.g-seg.b { stroke: var(--ok-t); stroke-width: 2; }
+.g-mark { fill: none; stroke: var(--ink2); stroke-width: 1.5; }
+.n-range { stroke: var(--acc-t); stroke-width: 6; stroke-linecap: round; }
+.n-end { fill: var(--acc-t); stroke: var(--acc-t); stroke-width: 2.5; }
+.n-end.open { fill: var(--card); }
+.v-u { fill: none; stroke: var(--line); stroke-width: 2; }
+.v-a { fill: var(--acc-t); fill-opacity: .14; stroke: var(--acc-t); stroke-width: 2; }
+.v-b { fill: var(--ok-t); fill-opacity: .14; stroke: var(--ok-t); stroke-width: 2; }
+.v-n { font-size: 18px; font-weight: 800; fill: var(--ink); }
+.b-bar { fill: var(--acc-t); opacity: .8; }
+.b-bar.hi { fill: var(--ok-t); opacity: 1; }
+.p-s { stroke: var(--card); stroke-width: 2; }
+.p-s.s0 { fill: var(--acc-t); } .p-s.s1 { fill: var(--ok-t); } .p-s.s2 { fill: var(--hl); } .p-s.s3 { fill: var(--err); }
+.s-face { fill: var(--acc-bg); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.s-face.t { fill: var(--card); }
+.s-face.s { fill: var(--line); fill-opacity: .55; }
+.s-hid { fill: none; stroke: var(--ink2); stroke-width: 1.3; stroke-dasharray: 5 4; }
+.s-diag { fill: none; stroke: var(--err-t); stroke-width: 2.5; }
+.solfig { margin-top: 10px; display: flex; justify-content: center; }
+
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }
