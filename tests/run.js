@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -955,6 +955,25 @@ var verify = {
   negbinom: function (t) {
     var d = t.data, p = 1 / d.pd, c = 1, i, k = d.k, r = d.r; for (i = 1; i <= r - 1; i++) c = c * (k - r + i) / i;
     var v = c * Math.pow(p, r) * Math.pow(1 - p, k - r); return Math.abs(v - t.answer.n / t.answer.d) < 1e-12 && reduced(t.answer);
+  },
+  kockaosszeg: function (t) { return t.fig.vals.every(function (v) { return v >= 1 && v <= 6; }) && t.answer === t.fig.vals.reduce(function (a, b) { return a + b; }, 0); },
+  nagyitas: function (t) {
+    var it = t.fig.items.filter(function (q) { return q.k === 'poly'; }), A = function (p) { var s = 0, i; for (i = 0; i < p.length; i++) { var q = p[(i + 1) % p.length]; s += p[i][0] * q[1] - q[0] * p[i][1]; } return Math.abs(s) / 2; };
+    var per = function (p) { var s = 0, i; for (i = 0; i < p.length; i++) { var q = p[(i + 1) % p.length]; s += Math.hypot(q[0] - p[i][0], q[1] - p[i][1]); } return s; };
+    var v = t.data.kind === 0 ? per(it[1].p) / per(it[0].p) : A(it[1].p) / A(it[0].p);
+    return Math.abs(v - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer);
+  },
+  szerencsekerek: function (t) { var it = t.fig.items.filter(function (q) { return q.k === 'sector'; }), hi = it.filter(function (q) { return q.cls === 'hi'; }).length, n = it.length, k = t.data.not ? n - hi : hi; return t.answer.n * n === k * t.answer.d && reduced(t.answer); },
+  koordterulet: function (t) { var P = t.data.P, a = Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]), b = Math.hypot(P[2][0] - P[1][0], P[2][1] - P[1][1]), c = Math.hypot(P[0][0] - P[2][0], P[0][1] - P[2][1]), s = (a + b + c) / 2, H = Math.sqrt(Math.max(0, s * (s - a) * (s - b) * (s - c))); return Math.abs(H - t.answer.n / t.answer.d) < 1e-6 && reduced(t.answer); },
+  polarkoord: function (t) {
+    var d = t.data, m = /^r = (\d*)(√2)?, φ = (\d+)°$/.exec(t.answer); if (!m) return false;
+    var r = (m[1] === '' ? 1 : +m[1]) * (m[2] ? Math.SQRT2 : 1), ph = +m[3] * Math.PI / 180;
+    return Math.abs(r * Math.cos(ph) - d.x) < 1e-9 && Math.abs(r * Math.sin(ph) - d.y) < 1e-9;
+  },
+  markov: function (t) {
+    var d = t.data, a = d.a.n / d.a.d, b = d.b.n / d.b.d, p = [1, 0], i;
+    for (i = 0; i < 5000; i++) p = [p[0] * (1 - a) + p[1] * b, p[0] * a + p[1] * (1 - b)];
+    return Math.abs(p[d.ask === 'A' ? 0 : 1] - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer);
   },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }

@@ -306,6 +306,11 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .g-poly.arrowhead { fill: var(--ink); }
 .g-seg.hl, .g-poly.hl { stroke: var(--ok-t); stroke-width: 4; fill: none; }
 .g-seg.hl.dash { stroke-width: 2.5; stroke-dasharray: 7 5; }
+.dc-face { fill: var(--card); stroke: var(--ink); stroke-width: 2.5; }
+.dc-pip { fill: var(--ink); }
+.cn-c { fill: #e8c46a; stroke: #9a7a2c; stroke-width: 2; }
+.cn-c.big { fill: #d9dde3; stroke: #8a8f99; }
+.cn-t { font-size: 12px; font-weight: 700; fill: #3a2f10; }
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }

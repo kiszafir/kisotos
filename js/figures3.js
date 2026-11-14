@@ -119,4 +119,28 @@
     T(cx + R / 2, yb + ry + 16, o.lR || ''); T(cx + r + 8, yt + 4, o.lr || '', 'start'); T(cx - 6, (yb + yt) / 2 + 4, o.lm || '', 'end');
     return '<svg class="fig solid" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Csonkakúp') + '">' + out + lab + '</svg>';
   };
+  /* Dobókockák: { vals: [3, 5, …] } – pöttyökkel. */
+  var PIPS = { 1: [[1, 1]], 2: [[0, 0], [2, 2]], 3: [[0, 0], [1, 1], [2, 2]], 4: [[0, 0], [2, 0], [0, 2], [2, 2]], 5: [[0, 0], [2, 0], [1, 1], [0, 2], [2, 2]], 6: [[0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]] };
+  KO.fig.dice = function (o) {
+    var s = 74, g = 22, W = o.vals.length * (s + g) + g, H = s + 2 * g, out = '';
+    o.vals.forEach(function (v, i) {
+      var x = g + i * (s + g), y = g;
+      out += '<rect class="dc-face" x="' + x + '" y="' + y + '" width="' + s + '" height="' + s + '" rx="12"></rect>';
+      PIPS[v].forEach(function (p) { out += '<circle class="dc-pip" cx="' + (x + 17 + p[0] * 20) + '" cy="' + (y + 17 + p[1] * 20) + '" r="7"></circle>'; });
+    });
+    return '<svg class="fig dice" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.alt || 'Dobókockák: ' + o.vals.join(', ')) + '">' + out + '</svg>';
+  };
+
+  /* Pénzérmék: { coins: [200, 200, 5, …] } – az érme mérete az értékkel nő. */
+  var CR = { 5: 18, 10: 20, 20: 22, 50: 24, 100: 25, 200: 27 };
+  KO.fig.coins = function (o) {
+    var x = 10, y = 0, rowH = 64, maxW = 330, out = '', W = 0;
+    o.coins.forEach(function (v) {
+      var r = CR[v] || 22;
+      if (x + 2 * r > maxW) { x = 10; y += rowH; }
+      out += '<circle class="cn-c' + (v >= 100 ? ' big' : '') + '" cx="' + (x + r) + '" cy="' + (y + 32) + '" r="' + r + '"></circle><text class="cn-t" x="' + (x + r) + '" y="' + (y + 37) + '" text-anchor="middle">' + v + '</text>';
+      x += 2 * r + 8; W = Math.max(W, x);
+    });
+    return '<svg class="fig coins" viewBox="0 0 ' + Math.max(W + 2, 120) + ' ' + (y + rowH) + '" role="img" aria-label="' + esc(o.alt || 'Pénzérmék') + '">' + out + '</svg>';
+  };
 })(globalThis.KO = globalThis.KO || {});
