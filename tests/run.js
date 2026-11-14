@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -974,6 +974,18 @@ var verify = {
     var d = t.data, a = d.a.n / d.a.d, b = d.b.n / d.b.d, p = [1, 0], i;
     for (i = 0; i < 5000; i++) p = [p[0] * (1 - a) + p[1] * b, p[0] * a + p[1] * (1 - b)];
     return Math.abs(p[d.ask === 'A' ? 0 : 1] - t.answer.n / t.answer.d) < 1e-9 && reduced(t.answer);
+  },
+  keruletracs: function (t) { var p = t.data.poly, s = 0, i; for (i = 0; i < p.length; i++) { var q = p[(i + 1) % p.length]; s += Math.abs(q[0] - p[i][0]) + Math.abs(q[1] - p[i][1]); } return s === t.answer; },
+  mennyivel: function (t) { var it = t.fig.items, a = it.filter(function (q) { return q.cls === 'hi'; }).length, b = it.filter(function (q) { return q.cls === 'fill'; }).length; return t.answer === Math.abs(a - b) && a !== b; },
+  sorozatgraf: function (t) { var P = t.fig.pts, d = P[1].y - P[0].y, ok = P.every(function (p, i) { return i === 0 || p.y - P[i - 1].y === d; }); return ok && t.answer === (t.data.ask === 0 ? d : P[0].y + (t.data.k - 1) * d); },
+  vektorfelbontas: function (t) {
+    var d = t.data, v = [d.al * d.a[0] + d.be * d.b[0], d.al * d.a[1] + d.be * d.b[1]], m = /^(−?)(\d*)a(?: ([+−]) (\d*)b)?$/.exec(t.answer); if (!m) return false;
+    var al = (m[1] ? -1 : 1) * (m[2] ? +m[2] : 1), be = m[3] ? (m[3] === '−' ? -1 : 1) * (m[4] ? +m[4] : 1) : 0;
+    var det = d.a[0] * d.b[1] - d.a[1] * d.b[0]; return det !== 0 && al * d.a[0] + be * d.b[0] === v[0] && al * d.a[1] + be * d.b[1] === v[1];
+  },
+  derivaltgraf: function (t) {
+    var fn = t.fig.fns[0], x = t.answer, e = 1e-3, l = KO.fnEval(fn, x - e), r = KO.fnEval(fn, x + e);
+    return Math.abs(KO.fnEval(fn, x)) < 1e-9 && (t.data.ask === 'min' ? l < 0 && r > 0 : l > 0 && r < 0);
   },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
