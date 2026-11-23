@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'content34', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -987,6 +987,20 @@ var verify = {
     var fn = t.fig.fns[0], x = t.answer, e = 1e-3, l = KO.fnEval(fn, x - e), r = KO.fnEval(fn, x + e);
     return Math.abs(KO.fnEval(fn, x)) < 1e-9 && (t.data.ask === 'min' ? l < 0 && r > 0 : l > 0 && r < 0);
   },
+  tortszamegyenes: function (t) {
+    var it = t.fig.items, dot = it.filter(function (q) { return q.k === 'dot'; })[0], ticks = it.filter(function (q) { return q.k === 'seg'; }).slice(1), big = ticks.filter(function (q) { return Math.abs(q.b[1]) > 0.2; });
+    var unit = big[1].a[0] - big[0].a[0], v = dot.at[0] / unit, sub = (ticks.length - 1) / (big.length - 1);
+    return Math.abs(v - t.answer.n / t.answer.d) < 1e-9 && sub === t.data.d && reduced(t.answer);
+  },
+  tizedesszamegyenes: function (t) { var d = t.data, it = t.fig.items, dot = it.filter(function (q) { return q.k === 'dot'; })[0], v = d.a + dot.at[0] / 8; return Math.abs(+t.answer.replace(',', '.') - v) < 1e-9; },
+  szazaleknegyzet: function (t) { var hi = t.fig.items.filter(function (q) { return q.cls === 'hi'; }).length, n = t.fig.items.length; return n === 100 && t.answer === (t.data.white ? 100 - hi : hi); },
+  gulafelszin: function (t) {
+    var d = t.data;
+    if (d.cone) { var a = Math.hypot(d.r, d.m); return Math.abs(Math.PI * d.r * d.r + Math.PI * d.r * a - t.answer * Math.PI) < 1e-9; }
+    var ma = Math.hypot(d.m, d.a / 2); return Math.abs(d.a * d.a + 4 * (d.a * ma / 2) - t.answer) < 1e-9;
+  },
+  racsutak: function (t) { var d = t.data, P = [], i, j; for (i = 0; i <= d.m; i++) { P[i] = []; for (j = 0; j <= d.n; j++) P[i][j] = i === 0 || j === 0 ? 1 : P[i - 1][j] + P[i][j - 1]; } return P[d.m][d.n] === t.answer; },
+  linlekepezes: function (t) { var S = t.fig.segs, u = [S[0].x2, S[0].y2], v = [S[1].x2, S[1].y2]; return Math.abs(u[0] * v[1] - u[1] * v[0]) === t.answer && t.answer > 0; },
   'komplex-absz': function (t) { var d = t.data; return t.answer > 0 && t.answer * t.answer === d.a * d.a + d.b * d.b; },
   'komplex-szorzat': function (t) { var d = t.data, im = d.a * d.d + d.b * d.c, r1 = Math.hypot(d.a, d.b), r2 = Math.hypot(d.c, d.d), ang = Math.atan2(d.b, d.a) + Math.atan2(d.d, d.c); return Math.abs(r1 * r2 * Math.cos(ang) - t.answer) < 1e-9 && t.answer * t.answer + im * im === (d.a * d.a + d.b * d.b) * (d.c * d.c + d.d * d.d); }
 };
