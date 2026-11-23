@@ -40,14 +40,16 @@ body { background: #ECEAE2; }
 .logo { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--hl); color: var(--hl-ink); font-family: 'Caveat', 'Segoe Print', cursive; font-size: 26px; font-weight: 700; line-height: 1; transform: rotate(-4deg); }
 .brand-name { font-family: var(--head); font-size: 1.25em; font-weight: 800; }
 .main { flex: 1; min-height: 0; overflow-y: auto; padding: var(--gap) 16px 32px; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 20px 20px; }
-.nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
-.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 60px; border: 0; border-top: 3px solid transparent; background: none; color: var(--ink2); font: inherit; font-size: 12px; cursor: pointer; }
+.nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 60px; padding: 0 2px; border: 0; border-top: 3px solid transparent; background: none; color: var(--ink2); font: inherit; font-size: 11.5px; line-height: 1.15; text-align: center; cursor: pointer; }
 .tab.cur { color: var(--acc-t); border-top-color: var(--acc-t); font-weight: 700; }
+.tab span { max-width: 100%; hyphens: auto; overflow-wrap: anywhere; }
+@media (max-width: 380px) { .tab { font-size: 10px; letter-spacing: -.01em; } }
 .ic { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
 /* Szöveg */
 .stack { display: flex; flex-direction: column; gap: var(--gap); }
-h1 { margin: 0; font-family: var(--head); font-size: 1.75em; font-weight: 800; line-height: 1.2; }
+h1 { margin: 0; font-family: var(--head); font-size: 1.75em; font-weight: 800; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; }
 h2 { margin: 0; font-family: var(--head); font-size: 1.1em; font-weight: 800; }
 p { margin: 0; max-width: 65ch; }
 .muted { color: var(--ink2); }
@@ -270,7 +272,9 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .s-face.s { fill: var(--line); fill-opacity: .55; }
 .s-hid { fill: none; stroke: var(--ink2); stroke-width: 1.3; stroke-dasharray: 5 4; }
 .s-diag { fill: none; stroke: var(--err-t); stroke-width: 2.5; }
-.solfig { margin-top: 10px; display: flex; justify-content: center; }
+.solfig { margin-top: 10px; display: flex; justify-content: center; width: 100%; max-width: 100%; min-width: 0; }
+.solfig > * { max-width: 100%; min-width: 0; }
+.fb { min-width: 0; max-width: 100%; }
 
 .f-rect { fill: var(--ok-t); fill-opacity: .16; stroke: var(--ok-t); stroke-width: 1.5; }
 .f-rect.c { fill: var(--line); fill-opacity: .5; stroke: var(--ink2); }
@@ -311,6 +315,31 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
 .cn-c { fill: #e8c46a; stroke: #9a7a2c; stroke-width: 2; }
 .cn-c.big { fill: #d9dde3; stroke: #8a8f99; }
 .cn-t { font-size: 12px; font-weight: 700; fill: #3a2f10; }
+/* SZE vizsga: előjeltábla, értéktáblázat, több kis ábra, vizsgalap */
+sub { font-size: .7em; line-height: 0; }
+.sgn, .tbl { overflow-x: auto; max-width: 100%; }
+.sgn table, .tbl table { border-collapse: collapse; margin: 0 auto; font-size: .92em; }
+.sgn th, .sgn td, .tbl th, .tbl td { border: 1px solid var(--line); padding: 6px 8px; text-align: center; white-space: nowrap; }
+.sgn thead th { font-weight: 600; font-size: .9em; background: var(--paper); }
+.sgn tbody th, .tbl th { text-align: left; font-weight: 700; background: var(--paper); }
+.sgn .sg-p { color: var(--ok-t); font-weight: 800; } .sgn .sg-m { color: var(--err-t); font-weight: 800; }
+.sgn .sg-up, .sgn .sg-cv { color: var(--ok-t); font-weight: 800; font-size: 1.15em; } .sgn .sg-dn, .sgn .sg-cc { color: var(--err-t); font-weight: 800; font-size: 1.15em; }
+.sgn .sg-res td { background: var(--acc-bg); }
+.multi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 520px) { .multi { grid-template-columns: minmax(0, 1fr); } }
+.multi-it { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; background: var(--card); }
+.multi-lab { font-family: var(--head); font-weight: 800; align-self: flex-start; }
+.multi-cap { font-size: .85em; color: var(--ink2); }
+.multi-it svg.fig { max-width: 100%; }
+.vz-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.vz-head h2 { margin-right: auto; }
+.vz-part { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.vz-head + .vz-part { border-top: 0; padding-top: 4px; }
+.vz-score { font-size: 1.6em; font-family: var(--head); }
+.vz-tasks { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip.ok { background: var(--ok-bg); color: var(--ok-t); } .chip.err { background: var(--err-bg); color: var(--err-t); }
+.vz-submit { align-items: stretch; }
+
 @media (min-width: 900px) {
   .app { max-width: none; border: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); font-size: calc(var(--fs) + 1px); }
   .app.calm { font-size: calc(var(--fs) * 1.2); }
@@ -357,4 +386,6 @@ svg.fig { height: auto; max-width: 420px; align-self: center; }
   .mood-felfedezo .g-left { position: static; }
   .main.scr-osszegzes > .stack { max-width: 760px; }
   .opts { gap: 14px; }
+  .main.scr-sze > .stack, .main.scr-vizsga > .stack { max-width: 920px; }
+  .multi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

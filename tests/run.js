@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'content34', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'content34', 'figures4', 'sze1', 'sze2', 'sze3', 'sze4', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -1009,6 +1009,9 @@ function sumCheck(t) {
   return BigInt(t.answer.n) * D === N * BigInt(t.answer.d) && reduced(t.answer);
 }
 
+var SZ = require('./sze.js')(KO, ok);
+Object.assign(verify, SZ.verify);
+
 var SEEDS = 400, perGen = {};
 Object.keys(KO.gens).filter(function (id) { return !process.env.KO_ONLY || process.env.KO_ONLY.split(",").indexOf(id) >= 0; }).forEach(function (id) {
   ok(typeof verify[id] === 'function', id + ': nincs független ellenőrző');
@@ -1119,7 +1122,7 @@ Object.keys(KO.tracks).forEach(function (trk) {
   A.init(KO.fresh());
   view(trk + ' kezdés');
   A.act('profil', trk);
-  ['ma', 'osveny', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s); });
+  ['ma', 'osveny', 'sze', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s); });
   var grs = KO.tracks[trk].groups, cover = {};
   ok(grs && grs.length >= 5, trk + ': legalább öt témakör');
   grs.forEach(function (g) { ok(g.ids.length >= 2, trk + ' / ' + g.name + ': legalább két téma'); g.ids.forEach(function (id) { ok(!cover[id], id + ': csak egy témakörben szerepel'); cover[id] = 1; }); });
@@ -1196,7 +1199,7 @@ Object.keys(KO.tracks).forEach(function (trk) {
       clock += KO.DAY;
     }
   });
-  ['ma', 'osveny', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s + ' (adatokkal)'); });
+  ['ma', 'osveny', 'sze', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s + ' (adatokkal)'); });
   ok(A.S.reports.length > 0 && A.S.sessions === KO.tracks[trk].ids.length * 3 + KO.tracks[trk].groups.length, trk + ': körök és jelentések száma');
   A.act('tema', 'dark'); A.act('calm'); ok(/app mood-\w+ dark calm/.test(view(trk + ' sötét')), trk + ': sötét és nyugodt mód');
   A.ui.fields = { n: 'abc' }; A.act('gyak', KO.tracks[trk].ids[0]);
@@ -1207,6 +1210,9 @@ A.ui.fields = { n: 'három' }; A.act('ellenoriz');
 ok(A.ui.sess.state === 'open' && A.ui.sess.inputErr.length > 0 && A.S.topics['t5-bovites'].hist.length === 0, 'nem szám bevitele nem számít válasznak');
 A.act('folytat');
 A.act('torol-kerdez'); A.act('torol'); ok(A.S.profile === null && A.ui.screen === 'kezdes', 'adattörlés után újra a kezdőképernyő');
+
+/* ---------- SZE vizsgafelkészítő: mintavizsgák, gyakorló vizsga, képernyők ---------- */
+SZ.examTests(A, view);
 
 /* ---------- Összegzés ---------- */
 var total = 0;

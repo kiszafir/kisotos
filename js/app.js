@@ -36,6 +36,7 @@
     down: 'M6 9l6 6 6-6',
     up: 'M6 15l6-6 6 6',
     moon: 'M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z',
+    exam: 'M7 3h7l5 5v13H7zM14 3v5h5M10 14l2 2 4-4',
     sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5'
   };
   function icon(name, size) {
@@ -87,6 +88,7 @@
       '<button type="button" class="pick" data-act="profil" data-arg="egyetem1"><strong>Egyetem: Matek 1</strong><span>Diszkrét matematika és analízis: halmazok, komplex számok, határérték, deriválás, integrál.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="egyetem2"><strong>Egyetem: Matek 2</strong><span>Lineáris algebra és többváltozós analízis: mátrixok, sajátérték, gradiens, kettős integrál.</span></button>' +
       '<button type="button" class="pick" data-act="profil" data-arg="egyetem3"><strong>Egyetem: Matek 3</strong><span>Valószínűségszámítás, statisztika és operációkutatás.</span></button>' +
+      '<button type="button" class="pick" data-act="profil" data-arg="sze1"><strong>SZE Matek 1 vizsga (Győr)</strong><span>MSTM001: a három mintavizsga anyaga részletes leckékkel és próbavizsgával.</span></button>' +
       '<p class="note">Nem kérünk nevet, e-mail-címet vagy fiókot. A haladásod csak ezen az eszközön tárolódik.</p></div>';
   };
 
@@ -281,8 +283,8 @@
     } else {
       h += '<p class="muted">' + (u.avg >= 0.8 ? 'Ez jól megy. Legközelebb ritkábban kerül elő, hogy másra is jusson idő.' : u.avg >= 0.5 ? 'Alakul. Holnap még egyszer előjön, hogy megmaradjon.' : 'Ez még nem megy biztosan. Nézd át a leckét, aztán jöhet egy újabb kör.') + '</p>';
     }
-    if (u.topics) return h + '<div class="btn-row">' + btn('Még egy vegyes kör', 'vegyes', u.mixed, 'ghost grow') + btn('Kész', 'nav', 'osveny', 'primary grow') + '</div></div>';
-    return h + '<div class="btn-row">' + btn('Még egy kör', 'gyak', u.topic, 'ghost grow') + btn('Kész', 'nav', 'ma', 'primary grow') + '</div></div>';
+    if (u.topics) return h + '<div class="btn-row">' + btn('Még egy vegyes kör', 'vegyes', u.mixed, 'ghost grow') + btn('Kész', 'nav', A.ui.home || 'osveny', 'primary grow') + '</div></div>';
+    return h + '<div class="btn-row">' + btn('Még egy kör', 'gyak', u.topic, 'ghost grow') + btn('Kész', 'nav', A.ui.home === 'sze' ? 'sze' : 'ma', 'primary grow') + '</div></div>';
   };
 
   V.terkep = function () {
@@ -310,7 +312,7 @@
     var st = A.S.settings, p = A.S.profile.track;
     function seg(label, act, arg, on) { return '<button type="button" class="seg-btn' + (on ? ' on' : '') + '" data-act="' + act + '" data-arg="' + arg + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + label + '</button>'; }
     var h = '<div class="stack"><h1>Beállítások</h1>' +
-      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Emelt', 'profil', 'emelt', p === 'emelt') + seg('Matek 1', 'profil', 'egyetem1', p === 'egyetem1') + seg('Matek 2', 'profil', 'egyetem2', p === 'egyetem2') + seg('Matek 3', 'profil', 'egyetem3', p === 'egyetem3') + '</div>' +
+      '<div class="card"><div class="eyebrow">Ki tanul?</div><div class="seg-row">' + seg('1–4. osztály', 'profil', 'also', p === 'also') + seg('5–8. osztály', 'profil', 'tortek', p === 'tortek') + seg('Érettségi', 'profil', 'erettsegi', p === 'erettsegi') + seg('Emelt', 'profil', 'emelt', p === 'emelt') + seg('Matek 1', 'profil', 'egyetem1', p === 'egyetem1') + seg('Matek 2', 'profil', 'egyetem2', p === 'egyetem2') + seg('Matek 3', 'profil', 'egyetem3', p === 'egyetem3') + seg('SZE vizsga', 'profil', 'sze1', p === 'sze1') + '</div>' +
       '<p class="muted small">Váltáskor a haladásod megmarad.</p></div>' +
       '<div class="card"><div class="eyebrow">Megjelenés</div><div class="seg-row">' + seg('Automatikus', 'tema', 'auto', st.theme === 'auto') + seg('Fehér', 'tema', 'light', st.theme === 'light') + seg('Fekete', 'tema', 'dark', st.theme === 'dark') + '</div>' +
       '<div class="seg-row">' + seg('Kevesebb zsúfoltság: ' + (st.calm ? 'be' : 'ki'), 'calm', '', st.calm) + seg('Felolvasás gomb: ' + (st.voice ? 'be' : 'ki'), 'hang', '', st.voice) + '</div>' +
@@ -327,20 +329,84 @@
     return h;
   };
 
+
+  /* ---------- SZE Matek 1 vizsgafelkészítő ---------- */
+  var SZE_PARTS = ['Függvények: értelmezési tartomány, inverz, transzformációk', 'Határérték: sorozat, függvény, ábrázolás', 'Deriválás: három függvény', 'Függvényvizsgálat: monotonitás vagy konvexitás', 'Érintő, Taylor-polinom, numerikus deriválás', 'Határozatlan és határozott integrál', 'Parciális integrálás, helyettesítés', 'Terület vagy forgástest, numerikus integrálás'];
+  V.sze = function () {
+    var T = KO.tracks.sze1, gs = T.groups, r = KO.recommend(T.ids, KO.topics, A.S, A.now()), res = A.S.szeRes || [], i;
+    var h = '<div class="stack"><div><h1>SZE Matek 1 vizsga</h1><p class="muted">Széchenyi István Egyetem, Győr – MSTM001. Minden lecke és feladat a három mintavizsga (A, B, C) anyagára épül, a megértéshez szükséges előzményekkel.</p></div>';
+    if (A.ui.ex) h += '<div class="rule"><div class="eyebrow">' + (A.ui.ex.done ? 'Legutóbbi vizsgád' : 'Folyamatban lévő vizsga') + '</div><p>' + esc(A.ui.ex.title) + (A.ui.ex.done ? ': ' + A.ui.ex.score + ' / ' + A.ui.ex.max + ' pont' : '') + '</p>' + btn(A.ui.ex.done ? 'Megnézem a megoldásokat' : 'Folytatom', 'nav', 'vizsga', 'primary') + '</div>';
+    h += '<div class="card"><div class="eyebrow">Próbavizsga</div><p>Ugyanaz a felépítés, mint a mintavizsgákon: 8 feladat, összesen 100 pont. Minden részfeladatnál 4 válasz közül választasz; a beadás után pontszámot, részletes megoldást és a hozzá tartozó leckét kapod.</p>' +
+      '<div class="btn-row">' + btn('Gyakorló vizsga (vegyes)', 'vz-start', 'gen', 'primary') + btn('A feladatsor', 'vz-start', 'A', 'ghost') + btn('B feladatsor', 'vz-start', 'B', 'ghost') + btn('C feladatsor', 'vz-start', 'C', 'ghost') + '</div>' +
+      '<p class="muted small">A gyakorló vizsga minden alkalommal új: a feladatok egy része a három mintavizsgából, a többi a program által generált, hasonló feladat. Tipp: előbb papíron oldd meg, utána jelöld be. A valódi vizsgán le kell vezetni a megoldást, és részpontok is járnak.</p></div>';
+    if (res.length) h += '<div class="card"><div class="eyebrow">Eredményeid</div><ul class="steps">' + res.slice(-5).reverse().map(function (q) { return '<li>' + esc(q.title) + ': <strong>' + q.score + '</strong> / ' + q.max + ' pont <span class="muted small">(' + esc(q.day) + ')</span></li>'; }).join('') + '</ul></div>';
+    h += '<div class="card"><div class="eyebrow">A vizsga felépítése (A és B minta)</div><ol class="steps">' + SZE_PARTS.map(function (x, k) { return '<li>' + esc(x) + ' <span class="muted small">(' + [12, 14, 12, 14, 12, 10, 12, 14][k] + ' pont)</span></li>'; }).join('') + '</ol><p class="muted small">A C mintában a pontok kicsit másképp oszlanak meg (13, 13, 12, 13, 13, 10, 12, 14), az összeg itt is 100.</p></div>';
+    h += '<div><h2>Leckék feladatonként</h2><p class="muted small">' + T.ids.length + ' lecke ábrákkal, kidolgozott mintavizsga-feladatokkal és gyakorlással.</p></div>';
+    for (i = 0; i < gs.length; i++) {
+      var g = gs[i], open = A.ui.szeGrp === i, done = g.ids.filter(function (id) { var m = mast(id); return m !== null && m >= 75; }).length;
+      h += '<div class="grp' + (open ? ' open' : '') + '"><button type="button" class="grp-head" data-act="sze-csoport" data-arg="' + i + '" aria-expanded="' + (open ? 'true' : 'false') + '">' +
+        '<span class="grp-num">' + (i + 1) + '</span><span class="grp-text"><span class="grp-name">' + esc(g.name.replace(/^\d\. feladat: /, '').replace(/^./, function (c) { return c.toUpperCase(); })) + '</span><span class="grp-sub">' + (i + 1) + '. feladat · ' + g.ids.length + ' lecke · ' + done + ' erős</span>' +
+        '<span class="bar grp-bar" role="img" aria-label="' + done + ' erős a ' + g.ids.length + ' témából"><span class="bar-fill ok" style="width: ' + Math.round(100 * done / g.ids.length) + '%"></span></span></span>' +
+        '<span class="grp-chev" aria-hidden="true">' + icon(open ? 'up' : 'down', 20) + '</span></button>';
+      if (open) h += '<div class="grp-tools">' + btn('Vegyes gyakorlás ebből a feladatból', 'vegyes', 'sze1:' + i, 'ghost') + '</div><ol class="path">' + g.ids.map(function (id) { return nodeHtml(id, r); }).join('') + '</ol>';
+      h += '</div>';
+    }
+    return h + '<p class="note">Nem hivatalos anyag: a Széchenyi István Egyetem nem hagyta jóvá. A feladatok a nyilvános mintavizsgák mintájára készültek; a pontozás a mintavizsga feladatonkénti pontszámait követi, a részfeladatokon belüli felosztás becslés.</p></div>';
+  };
+
+  V.vizsga = function () {
+    var ex = A.ui.ex, h = '<div class="stack"><div><h1>' + esc(ex.title) + '</h1><p class="muted small">8 feladat, ' + ex.items.reduce(function (a, it) { return a + it.pts; }, 0) + ' pont. ' + (ex.done ? 'Beadva.' : 'Jelöld be a válaszaidat, aztán add be.') + '</p></div>';
+    if (ex.done) {
+      var pc = Math.round(100 * ex.score / ex.max), cls = pc >= 75 ? 'ok' : pc >= 50 ? 'info' : 'err';
+      h += '<div class="card"><div class="eyebrow">Eredmény</div><div class="strong vz-score">' + ex.score + ' / ' + ex.max + ' pont (' + pc + '%)</div><div class="bar" role="img" aria-label="' + pc + ' százalék"><span class="bar-fill ' + cls + '" style="width: ' + pc + '%"></span></div>' +
+        '<div class="vz-tasks">' + ex.tasks.map(function (T) { var got = 0, mx = 0; ex.items.forEach(function (it) { if (it.no === T.no) { mx += it.pts; if (it.ok) got += it.pts; } }); return '<span class="chip' + (got === mx ? ' ok' : got === 0 ? ' err' : '') + '">' + T.no + '. ' + got + '/' + mx + '</span>'; }).join('') + '</div>' +
+        '<p class="muted small">Itt csak a teljesen jó válasz ér pontot. A hibás részeknél nézd meg a lépésenkénti megoldást és a leckét.</p></div>';
+    }
+    var answered = Object.keys(ex.sel).length;
+    ex.tasks.forEach(function (T) {
+      var its = ex.items.map(function (it, i) { return [it, i]; }).filter(function (q) { return q[0].no === T.no; });
+      h += '<div class="card vz-task"><div class="vz-head"><h2>' + T.no + '. feladat</h2><span class="chip">' + T.pts + ' pont</span>' + (ex.kind === 'gen' ? '<span class="chip">' + (T.src === 'gen' ? 'generált' : T.src + ' minta') + '</span>' : '') + '</div>';
+      its.forEach(function (q) {
+        var it = q[0], i = q[1], t = it.task, sel = ex.sel[i];
+        h += '<div class="vz-part"><div class="eyebrow">' + it.sub + ') ' + it.pts + ' pont</div><p>' + M(t.prompt) + '</p>' + (t.math ? '<div class="math">' + M(t.math) + '</div>' : '') + KO.figure(t.fig);
+        h += '<div class="opts' + (t.vtype === 'text' ? ' col' : '') + '" role="group" aria-label="Válaszlehetőségek">';
+        it.opts.forEach(function (v, j) {
+          var right = KO.eqValue(v, t.answer, t.vtype), c = '';
+          if (ex.done) c = right ? ' ok' : sel === j ? ' err' : ''; else if (sel === j) c = ' on';
+          h += '<button type="button" class="opt' + c + '" data-act="vz-valaszt" data-arg="' + i + ':' + j + '" aria-pressed="' + (sel === j ? 'true' : 'false') + '"' + (ex.done ? ' disabled' : '') + '>' + M(KO.show(v, t.vtype)) + '</button>';
+        });
+        h += '</div>';
+        if (ex.done) {
+          var wrongW = sel !== undefined && !it.ok ? t.wrongs.filter(function (x) { return KO.eqValue(x.v, it.opts[sel], t.vtype); })[0] : null;
+          h += '<div class="fb ' + (it.ok ? 'ok' : 'err') + '"><div class="fb-head">' + icon(it.ok ? 'ok' : 'warn', 22) + '<span>' + (it.ok ? 'Jó, ' + it.pts + ' pont' : sel === undefined ? 'Nincs válasz, 0 pont' : 'Nem jó, 0 pont') + '</span></div>' +
+            (it.ok ? '' : '<p><strong>Helyes válasz:</strong> ' + M(KO.show(t.answer, t.vtype)) + '</p>') + (wrongW ? '<p>' + M(wrongW.fb) + '</p>' : '') +
+            '<div class="btn-row">' + btn(ex.open[i] ? 'Megoldás elrejtése' : 'Megoldás lépésenként', 'vz-mutat', i, 'ghost') + btn('Lecke: ' + esc(KO.topics[t.topic].name), 'lecke', t.topic, 'ghost') + '</div>';
+          if (ex.open[i]) h += '<ol class="steps">' + t.tips.map(function (x) { return '<li>' + M(x) + '</li>'; }).join('') + '</ol>' + (t.solfig ? '<div class="solfig">' + KO.figure(t.solfig) + '</div>' : '');
+          h += '</div>';
+        }
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+    if (!ex.done) h += '<div class="card vz-submit"><p class="muted small">' + answered + ' / ' + ex.items.length + ' részfeladat megválaszolva.</p>' + btn('Beadom', 'vz-beadom', null, 'primary big') + '</div>';
+    else h += '<div class="btn-row">' + btn('Új gyakorló vizsga', 'vz-start', 'gen', 'primary grow') + btn('Vissza', 'nav', 'sze', 'ghost grow') + '</div>';
+    return h + '</div>';
+  };
+
   /* ---------- Keret ---------- */
   A.view = function () {
     var S = A.S, ui = A.ui, st = S.settings, dark = st.theme === 'dark' || (st.theme === 'auto' && A.prefersDark);
-    var sub = ui.screen === 'lecke' || ui.screen === 'gyak' || ui.screen === 'osszegzes';
+    var sub = ui.screen === 'lecke' || ui.screen === 'gyak' || ui.screen === 'osszegzes' || ui.screen === 'vizsga', back = ui.screen === 'vizsga' ? 'sze' : (ui.home || 'osveny');
     var cls = 'app mood-' + mood() + (dark ? ' dark' : '') + (st.calm ? ' calm' : '') + (S.profile ? '' : ' no-nav');
     var h = '<div class="' + cls + '"><header class="top">';
-    h += sub ? '<button type="button" class="icon-btn" data-act="nav" data-arg="osveny" aria-label="Vissza az ösvényre">' + icon('back', 22) + '</button>' : '';
+    h += sub ? '<button type="button" class="icon-btn" data-act="nav" data-arg="' + back + '" aria-label="' + (back === 'sze' ? 'Vissza a vizsgafelkészítőhöz' : 'Vissza az ösvényre') + '">' + icon('back', 22) + '</button>' : '';
     h += '<div class="brand"><span class="logo" aria-hidden="true">5</span><span class="brand-name">Kisötös</span>' + (S.profile ? '<span class="chip">' + esc(track().chip) + '</span>' : '') + '</div>' +
       '<button type="button" class="icon-btn theme-btn" data-act="tema-valt" aria-label="' + (dark ? 'Váltás világos módra' : 'Váltás sötét módra') + '">' + icon(dark ? 'sun' : 'moon', 22) + '</button></header>';
     h += '<main class="main scr-' + ui.screen + '" id="main">' + V[ui.screen]() + '</main>';
     if (S.profile) {
-      var tabs = [['ma', 'Ma', 'home'], ['osveny', 'Ösvény', 'path'], ['terkep', 'Tudástérkép', 'grid'], ['beall', 'Beállítások', 'set']];
+      var tabs = [['ma', 'Ma', 'home'], ['osveny', 'Ösvény', 'path'], ['sze', 'SZE vizsga', 'exam'], ['terkep', 'Tudástérkép', 'grid'], ['beall', 'Beállítások', 'set']];
       h += '<nav class="nav" aria-label="Fő menü">' + tabs.map(function (t) {
-        var cur = ui.screen === t[0];
+        var cur = ui.screen === t[0] || (t[0] === 'sze' && ui.screen === 'vizsga');
         return '<button type="button" class="tab' + (cur ? ' cur' : '') + '" data-act="nav" data-arg="' + t[0] + '"' + (cur ? ' aria-current="page"' : '') + '>' + icon(t[2], 22) + '<span>' + t[1] + '</span></button>';
       }).join('') + '</nav>';
     }
@@ -361,14 +427,14 @@
     newTask(s);
   }
   /* Vegyes gyakorlás: egy témakör több témájából egy-egy feladat, a gyengébbekkel kezdve. */
-  function startMixed(gi) {
-    var g = groupsOf(track())[gi], seen = [], fresh = [];
+  function startMixed(gi, trk) {
+    var g = groupsOf(trk ? KO.tracks[trk] : track())[gi], seen = [], fresh = [];
     g.ids.forEach(function (id) { (mast(id) === null ? fresh : seen).push(id); });
     seen.sort(function (a, b) { return mast(a) - mast(b); });
     var pool = seen.concat(fresh).slice(0, ROUND), i = 0;
     while (pool.length < ROUND) pool.push(pool[i++ % g.ids.length]);
     pool = KO.rng(A.S.seed++).shuffle(pool);
-    var s = { topic: pool[0], mixed: gi, group: g.name, logT: [], i: 0, log: [] };
+    var s = { topic: pool[0], mixed: trk ? trk + ':' + gi : gi, group: g.name, logT: [], i: 0, log: [] };
     s.ids = pool.map(function (id) { tstate(id).seen = true; return KO.pickGens(KO.gensOf(id), mast(id), 1)[0]; });
     A.ui.topic = pool[0]; A.ui.sess = s; A.ui.screen = 'gyak';
     newTask(s);
@@ -438,7 +504,7 @@
       A.S.profile = { track: arg, mood: KO.tracks[arg].mood };
       A.ui.screen = 'ma'; A.ui.sess = null; save();
     },
-    nav: function (arg) { if (arg === 'osveny' && A.ui.screen !== 'osveny') { A.ui.grpTrack = null; A.ui.q = ''; } A.ui.screen = arg; A.ui.confirmReset = false; },
+    nav: function (arg) { if (arg === 'osveny' && A.ui.screen !== 'osveny') { A.ui.grpTrack = null; A.ui.q = ''; } if (arg === 'osveny' || arg === 'sze' || arg === 'ma') A.ui.home = arg === 'ma' ? 'osveny' : arg; A.ui.screen = arg; A.ui.confirmReset = false; },
     csoport: function (arg) { var i = Number(arg); A.ui.grp = A.ui.grp === i ? -1 : i; },
     folytat: function () {
       var r = rec();
@@ -448,7 +514,7 @@
     'demo-lep': function () { if (A.ui.demo && A.ui.demo.step < 3) A.ui.demo.step++; },
     'demo-uj': function () { newDemo(A.ui.topic, false); save(); },
     gyak: function (id) { tstate(id).seen = true; startRound(id); },
-    vegyes: function (arg) { startMixed(Number(arg)); },
+    vegyes: function (arg) { var a = String(arg).split(':'); if (a.length > 1) startMixed(Number(a[1]), a[0]); else startMixed(Number(arg)); },
     keres: function () { A.ui.q = String(A.ui.fields.q || '').trim(); },
     'keres-torol': function () { A.ui.q = ''; },
     valaszt: function (arg) {
@@ -479,6 +545,19 @@
     calm: function () { A.S.settings.calm = !A.S.settings.calm; save(); },
     hang: function () { A.S.settings.voice = !A.S.settings.voice; save(); },
     vizsga: function () { A.S.settings.examDate = /^\d{4}-\d{2}-\d{2}$/.test(A.ui.fields.examDate || '') ? A.ui.fields.examDate : ''; save(); },
+    'sze-csoport': function (arg) { var i = Number(arg); A.ui.szeGrp = A.ui.szeGrp === i ? -1 : i; },
+    'vz-start': function (arg) { A.ui.ex = KO.szeExam(arg, A.S.seed++); A.ui.screen = 'vizsga'; A.ui.home = 'sze'; save(); },
+    'vz-valaszt': function (arg) { var ex = A.ui.ex, a = String(arg).split(':'); if (!ex || ex.done) return; var i = Number(a[0]), j = Number(a[1]); if (ex.sel[i] === j) delete ex.sel[i]; else ex.sel[i] = j; },
+    'vz-beadom': function () {
+      var ex = A.ui.ex; if (!ex || ex.done) return;
+      KO.szeGrade(ex);
+      var now = A.now();
+      ex.items.forEach(function (it) { var ts = tstate(it.task.topic); ts.seen = true; ts.hist.push({ s: it.ok ? 1 : 0, lv: 3, err: null, root: null, t: now }); if (ts.hist.length > 30) ts.hist = ts.hist.slice(-30); });
+      (A.S.szeRes || (A.S.szeRes = [])).push({ title: ex.title, score: ex.score, max: ex.max, day: KO.dayKey(now) });
+      if (A.S.szeRes.length > 20) A.S.szeRes = A.S.szeRes.slice(-20);
+      save();
+    },
+    'vz-mutat': function (arg) { var ex = A.ui.ex; if (ex) ex.open[arg] = !ex.open[arg]; },
     'torol-kerdez': function () { A.ui.confirmReset = true; },
     megsem: function () { A.ui.confirmReset = false; },
     torol: function () { KO.store.clear(); A.init(KO.fresh()); save(); }
@@ -506,7 +585,7 @@
          megjegyezzük, és ugyanazon a képernyőn visszaállítjuk. Csak új képernyőnél, új leckénél vagy új feladatnál ugrunk a tetejére. */
       var old = document.getElementById('main'), oldTop = old ? old.scrollTop : 0, oldWin = window.pageYOffset || 0;
       root.innerHTML = A.view();
-      var key = A.ui.screen + ':' + (A.ui.screen === 'lecke' || A.ui.screen === 'gyak' ? A.ui.topic : '') + ':' + (A.ui.sess ? A.ui.sess.i : '');
+      var key = A.ui.screen + ':' + (A.ui.screen === 'lecke' || A.ui.screen === 'gyak' ? A.ui.topic : '') + ':' + (A.ui.sess ? A.ui.sess.i : '') + ':' + (A.ui.screen === 'vizsga' && A.ui.ex ? A.ui.ex.seed + (A.ui.ex.done ? 'd' : '') : '');
       var main = document.getElementById('main');
       if (main) main.scrollTop = key === lastKey ? oldTop : 0;
       if (key === lastKey) { if (window.pageYOffset !== oldWin) window.scrollTo(0, oldWin); } else window.scrollTo(0, 0);
