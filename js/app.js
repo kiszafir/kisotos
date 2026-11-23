@@ -337,11 +337,6 @@
       '<div class="card"><div class="eyebrow">' + U('Megjelenés', 'Appearance') + '</div><div class="seg-row">' + seg(U('Automatikus', 'Automatic'), 'tema', 'auto', st.theme === 'auto') + seg(U('Fehér', 'Light'), 'tema', 'light', st.theme === 'light') + seg(U('Fekete', 'Dark'), 'tema', 'dark', st.theme === 'dark') + '</div>' +
       '<div class="seg-row">' + seg(U('Kevesebb zsúfoltság: ', 'Calmer layout: ') + (st.calm ? U('be', 'on') : U('ki', 'off')), 'calm', '', st.calm) + seg(U('Felolvasás gomb: ', 'Read-aloud button: ') + (st.voice ? U('be', 'on') : U('ki', 'off')), 'hang', '', st.voice) + '</div>' +
       '<p class="muted small">' + U('A „kevesebb zsúfoltság” nagyobb betűt és nyugodtabb felületet ad. Ez csak beállítás.', 'The calmer layout gives larger text and a quieter screen. It is only a setting.') + '</p></div>';
-    if (KO.meres) {
-      var mon = KO.meres.on();
-      h += '<div class="card"><div class="eyebrow">' + U('Látogatottság-mérés', 'Visitor statistics') + '</div><div class="seg-row">' + seg(U('Mérés ezen az eszközön: ', 'Count my visits on this device: ') + (mon ? U('be', 'on') : U('ki', 'off')), 'meres', '', mon) + '</div>' +
-        '<p class="muted small">' + U('Névtelenül mérjük, hányan használják az oldalt és mennyi ideig: süti, név és e-mail-cím nélkül. Itt kikapcsolhatod ezen az eszközön.', 'We count anonymously how many people use the site and for how long: no cookies, no names, no email addresses. You can switch it off for this device here.') + '</p></div>';
-    }
     if (p === 'erettsegi' || p === 'emelt') {
       h += '<div class="card"><label class="eyebrow" for="f-ex">Mikor érettségizel matekból?</label><div class="btn-row"><input id="f-ex" class="date-in" type="date" data-field="examDate" value="' + esc(st.examDate || '') + '">' + btn('Mentés', 'vizsga', null, 'ghost') + '</div>' +
         '<p class="muted small">A hivatalos időpontot az Oktatási Hivatal oldalán nézd meg. Az app nem tudja fejből.</p></div>';
@@ -577,7 +572,6 @@
     'tema-valt': function () { var st = A.S.settings, dark = st.theme === 'dark' || (st.theme === 'auto' && A.prefersDark); st.theme = dark ? 'light' : 'dark'; save(); },
     calm: function () { A.S.settings.calm = !A.S.settings.calm; save(); },
     hang: function () { A.S.settings.voice = !A.S.settings.voice; save(); },
-    meres: function () { if (KO.meres) KO.meres.set(!KO.meres.on()); },
     vizsga: function () { A.S.settings.examDate = /^\d{4}-\d{2}-\d{2}$/.test(A.ui.fields.examDate || '') ? A.ui.fields.examDate : ''; save(); },
     'sze-csoport': function (arg) { var i = Number(arg); A.ui.szeGrp = A.ui.szeGrp === i ? -1 : i; },
     'sze-nyelv': function (arg) { A.S.settings.szeLang = arg === 'en' ? 'en' : 'hu'; A.ui.szeGrp = -1; save(); },

@@ -2,7 +2,7 @@
    Süti és személyes adat nélkül; csak a nyilvános weboldalon (kiszafir.github.io) mér, helyben vagy a claude.ai-on nem.
    Képernyőváltáskor egy oldalmegtekintést küld (pl. /matek1/#/lecke/sze-lanc), aktív használat közben
    percenként egy „aktiv” eseményt, hogy a látogatás hossza akkor is látsszon, ha valaki sokáig egy képernyőn marad.
-   Kikapcsolás ezen az eszközön: a beállításokban, vagy az oldal megnyitása a #nem-szamol végződéssel. */
+   Kikapcsolás ezen az eszközön (a tulajdonos saját látogatásaihoz): az oldal megnyitása a #nem-szamol végződéssel, visszakapcsolás: #szamol. */
 (function (KO) {
   'use strict';
   var KEY = 'umami.disabled', last = '', pending = null, lastInput = 0, tries = 0;
