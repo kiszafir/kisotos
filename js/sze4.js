@@ -281,13 +281,13 @@
     return { no: no, sub: sub, pts: pts, task: task, opts: opts };
   }
   /* kind: 'A' | 'B' | 'C' | 'gen'. */
-  KO.szeExam = function (kind, seed) {
-    var rng = KO.rng(seed), items = [], tasks = [];
+  KO.szeExam = function (kind, seed, lang) {
+    var rng = KO.rng(seed), items = [], tasks = [], en = lang === 'en', bank = en ? S.bankEn : S.bank, slots = en ? S.SLOTS_EN : SLOTS;
     if (kind === 'A' || kind === 'B' || kind === 'C') {
-      S.bank[kind](rng).forEach(function (T) { tasks.push({ no: T.no, pts: T.pts, src: kind }); T.parts.forEach(function (p) { items.push(item(T.no, p.sub, p.pts, fromBank(p, kind), rng)); }); });
+      bank[kind](rng).forEach(function (T) { tasks.push({ no: T.no, pts: T.pts, src: kind }); T.parts.forEach(function (p) { items.push(item(T.no, p.sub, p.pts, fromBank(p, kind), rng)); }); });
     } else {
-      var banks = { A: S.bank.A(rng), B: S.bank.B(rng), C: S.bank.C(rng) };
-      SLOTS.forEach(function (sl) {
+      var banks = { A: bank.A(rng), B: bank.B(rng), C: bank.C(rng) };
+      slots.forEach(function (sl) {
         var src = rng.pick(['A', 'B', 'C', 'gen', 'gen', 'gen']);
         tasks.push({ no: sl.no, pts: sl.pts, src: src });
         if (src !== 'gen') {
@@ -303,8 +303,8 @@
         }
       });
     }
-    var title = kind === 'gen' ? 'Gyakorló vizsga' : 'Mintavizsga – ' + kind + ' feladatsor';
-    return { kind: kind, seed: seed, title: title, tasks: tasks, items: items, sel: {}, done: false, open: {} };
+    var title = en ? (kind === 'gen' ? 'Practice exam' : 'Sample exam – set ' + kind) : (kind === 'gen' ? 'Gyakorló vizsga' : 'Mintavizsga – ' + kind + ' feladatsor');
+    return { kind: kind, seed: seed, lang: en ? 'en' : 'hu', title: title, tasks: tasks, items: items, sel: {}, done: false, open: {} };
   };
   KO.szeGrade = function (ex) {
     var got = 0, max = 0;

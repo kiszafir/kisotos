@@ -227,7 +227,7 @@
   /* Előjel-alapú darabolás: a kritikus pontoknál zárt, a kizárt pontoknál és ±∞-nél nyitott végpont. */
   function xstr(x, map) { if (map && map[x] !== undefined) return map[x]; for (var d = 1; d <= 12; d++) { var n = Math.round(x * d); if (Math.abs(n / d - x) < 1e-9) return rat(n, d); } return num(Math.round(x * 100) / 100); }
   S.xstr = xstr;
-  S.pieces = function (crit, breaks, sgn, start, labels, map) {
+  S.pieces = function (crit, breaks, sgn, start, labels, map, en) {
     /* start: null (−∞-től) vagy {x, open} (értelmezési tartomány kezdete) */
     var pts = crit.map(function (x) { return { x: x, c: true }; }).concat(breaks.map(function (x) { return { x: x, c: false }; })).sort(function (a, b) { return a.x - b.x; });
     var iv0 = [], lo = start ? { x: start.x, c: false, s: true } : null, i;
@@ -240,8 +240,8 @@
     var out = [];
     iv0.forEach(function (q) { var last = out[out.length - 1]; if (last && last.s === q.s && q.lo && q.lo.c) last.hi = q.hi; else out.push({ lo: q.lo, hi: q.hi, s: q.s }); });
     return out.map(function (q) {
-      return labels[q.s > 0 ? 0 : 1] + ' ' + iv(!!(q.lo && q.lo.c), q.lo ? xstr(q.lo.x, map) : '−∞', q.hi ? xstr(q.hi.x, map) : '∞', !!(q.hi && q.hi.c));
-    }).join(', ');
+      return labels[q.s > 0 ? 0 : 1] + ' ' + iv(!!(q.lo && q.lo.c), q.lo ? xstr(q.lo.x, map) : '−∞', q.hi ? xstr(q.hi.x, map) : '∞', !!(q.hi && q.hi.c), en);
+    }).join(en ? '; ' : ', ');
   };
   var E = Math.E;
   /* Függvénycsaládok a monotonitás-vizsgálathoz (az azonos seedű feladatok ugyanazt a függvényt kapják). */
@@ -251,62 +251,63 @@
       var a = r.pick([-2, -1, 1, 2]), ea = a === 1 ? 'e^x' : a === -1 ? 'e^(−x)' : 'e^(' + S.co(a, 'x') + ')', x0 = 2 / a;
       return { t: t, f: '[[' + ea + '/x^2]]', d: '[[' + ea + '(' + lin(a, -2) + ')/x^3]]', fj: function (x) { return Math.exp(a * x) / (x * x); }, dj: function (x) { return Math.exp(a * x) * (a * x - 2) / (x * x * x); }, crit: [x0], breaks: [0], ys: [Math.abs(a) === 2 ? 'e^2' : '[[e^2/4]]'],
         dw: ['[[' + ea + '(' + lin(a, 2) + ')/x^3]]', '[[' + S.co(a, ea) + '/2x]]', '[[' + ea + '(' + lin(a, -2) + ')/x^4]]'],
-        deriv: 'Hányadosszabály: [[' + S.co(a, ea) + ' · x^2 − ' + ea + ' · 2x/x^4]], x-szel egyszerűsítve.', yw: Math.abs(a) === 2 ? 'e^(−2)' : '[[e^(−2)/4]]' };
+        deriv: 'Hányadosszabály: [[' + S.co(a, ea) + ' · x^2 − ' + ea + ' · 2x/x^4]], x-szel egyszerűsítve.', de: 'Quotient rule: [[' + S.co(a, ea) + ' · x^2 − ' + ea + ' · 2x/x^4]], then cancel x.', yw: Math.abs(a) === 2 ? 'e^(−2)' : '[[e^(−2)/4]]' };
     }
     if (t === 'racsq') {
       var c = r.pick([-3, -2, -1, 1, 2, 3]), den = '(x' + S.sg(-c) + ')';
       return { t: t, f: '[[x^2/' + den + '^2]]', d: (c > 0 ? '−' : '') + '[[' + (2 * Math.abs(c)) + 'x/' + den + '^3]]', fj: function (x) { return x * x / ((x - c) * (x - c)); }, dj: function (x) { return -2 * c * x / Math.pow(x - c, 3); }, crit: [0], breaks: [c], ys: ['0'],
         dw: [(c > 0 ? '' : '−') + '[[' + (2 * Math.abs(c)) + 'x/' + den + '^3]]', '[[2x/' + den + '^2]]', '[[x/' + den + ']]'],
-        deriv: 'Hányadosszabály: [[2x' + den + '^2 − x^2 · 2' + den + '/' + den + '^4]], ' + den + '-zel egyszerűsítve a számláló 2x' + den + ' − 2x^2 = ' + num(-2 * c) + 'x.', yw: '1' };
+        deriv: 'Hányadosszabály: [[2x' + den + '^2 − x^2 · 2' + den + '/' + den + '^4]], ' + den + '-zel egyszerűsítve a számláló 2x' + den + ' − 2x^2 = ' + num(-2 * c) + 'x.', de: 'Quotient rule: [[2x' + den + '^2 − x^2 · 2' + den + '/' + den + '^4]]; cancelling ' + den + ', the numerator is 2x' + den + ' − 2x^2 = ' + num(-2 * c) + 'x.', yw: '1' };
     }
     if (t === 'cubic') {
       var p, q; do { p = r.int(-4, 3); q = r.int(-3, 4); } while (p >= q || (p + q) % 2 !== 0);
       var B = -3 * (p + q) / 2, C = 3 * p * q, D = r.int(-5, 5), fj = function (x) { return x * x * x + B * x * x + C * x + D; };
       return { t: t, f: S.polyN([1, B, C, D], 'x'), d: S.polyN([3, 2 * B, C], 'x'), fj: fj, dj: function (x) { return 3 * x * x + 2 * B * x + C; }, crit: [p, q], breaks: [], ys: [num(fj(p)), num(fj(q))],
         dw: [S.polyN([3, B, C], 'x'), S.polyN([3, 2 * B, C, 0], 'x').replace(/ \+ 0$/, ''), S.polyN([3, -2 * B, C], 'x')],
-        deriv: 'Tagonként: f′(x) = ' + S.polyN([3, 2 * B, C], 'x') + ' = 3(x' + S.sg(-p) + ')(x' + S.sg(-q) + ').', yw: num(-fj(p)) };
+        deriv: 'Tagonként: f′(x) = ' + S.polyN([3, 2 * B, C], 'x') + ' = 3(x' + S.sg(-p) + ')(x' + S.sg(-q) + ').', de: 'Term by term: f′(x) = ' + S.polyN([3, 2 * B, C], 'x') + ' = 3(x' + S.sg(-p) + ')(x' + S.sg(-q) + ').', yw: num(-fj(p)) };
     }
     if (t === 'xexp') {
       var k = r.pick([-2, -1, 1, 2]), ek = k === 1 ? 'e^x' : k === -1 ? 'e^(−x)' : 'e^(' + S.co(k, 'x') + ')';
       return { t: t, f: 'x·' + ek, d: '(' + lin(k, 1).replace(/^(−?\d*x) \+ 1$/, '1 + $1').replace('1 + −', '1 − ') + ')' + ek, fj: function (x) { return x * Math.exp(k * x); }, dj: function (x) { return (1 + k * x) * Math.exp(k * x); }, crit: [-1 / k], breaks: [], ys: [k > 0 ? '−[[1/' + (k === 1 ? '' : k) + 'e]]' : '[[1/' + (k === -1 ? '' : -k) + 'e]]'],
         dw: [ek, S.co(k, 'x·' + ek), '(' + (k > 0 ? '1 − ' + S.co(k, 'x') : '1 + ' + S.co(-k, 'x')) + ')' + ek],
-        deriv: 'Szorzatszabály: 1 · ' + ek + ' + x · ' + (k > 0 ? S.co(k, ek) : '(' + S.co(k, ek) + ')') + ', kiemelve ' + ek + '.', yw: k > 0 ? '[[1/' + (k === 1 ? '' : k) + 'e]]' : '−[[1/' + (k === -1 ? '' : -k) + 'e]]' };
+        deriv: 'Szorzatszabály: 1 · ' + ek + ' + x · ' + (k > 0 ? S.co(k, ek) : '(' + S.co(k, ek) + ')') + ', kiemelve ' + ek + '.', de: 'Product rule: 1 · ' + ek + ' + x · ' + (k > 0 ? S.co(k, ek) : '(' + S.co(k, ek) + ')') + ', then factor out ' + ek + '.', yw: k > 0 ? '[[1/' + (k === 1 ? '' : k) + 'e]]' : '−[[1/' + (k === -1 ? '' : -k) + 'e]]' };
     }
     if (t === 'x2exp') {
       var k2 = r.pick([-1, 1]), ek2 = k2 === 1 ? 'e^x' : 'e^(−x)';
       return { t: t, f: 'x^2·' + ek2, d: 'x(' + (k2 === 1 ? 'x + 2' : '2 − x') + ')' + ek2, fj: function (x) { return x * x * Math.exp(k2 * x); }, dj: function (x) { return x * (2 + k2 * x) * Math.exp(k2 * x); }, crit: k2 === 1 ? [-2, 0] : [0, 2], breaks: [], ys: k2 === 1 ? ['[[4/e^2]]', '0'] : ['0', '[[4/e^2]]'],
-        dw: ['2x·' + ek2, 'x(' + (k2 === 1 ? 'x − 2' : '2 + x') + ')' + ek2, '(x^2 + 2x)'], deriv: 'Szorzatszabály: 2x · ' + ek2 + ' + x^2 · ' + (k2 === 1 ? ek2 : '(−' + ek2 + ')') + ', kiemelve x · ' + ek2 + '.', yw: '[[4/e]]' };
+        dw: ['2x·' + ek2, 'x(' + (k2 === 1 ? 'x − 2' : '2 + x') + ')' + ek2, '(x^2 + 2x)'], deriv: 'Szorzatszabály: 2x · ' + ek2 + ' + x^2 · ' + (k2 === 1 ? ek2 : '(−' + ek2 + ')') + ', kiemelve x · ' + ek2 + '.', de: 'Product rule: 2x · ' + ek2 + ' + x^2 · ' + (k2 === 1 ? ek2 : '(−' + ek2 + ')') + ', then factor out x · ' + ek2 + '.', yw: '[[4/e]]' };
     }
     var m = r.pick([1, 2, 3]), cc = m * m;
     return { t: 'xpc', f: '[[x^2 + ' + cc + '/x]]', d: '[[x^2 − ' + cc + '/x^2]]', fj: function (x) { return x + cc / x; }, dj: function (x) { return 1 - cc / (x * x); }, crit: [-m, m], breaks: [0], ys: [num(-2 * m), num(2 * m)],
-      dw: ['[[x^2 + ' + cc + '/x^2]]', '2x', '1 − [[' + cc + '/x]]'], deriv: 'Tagokra bontva: f(x) = x + [[' + cc + '/x]], f′(x) = 1 − [[' + cc + '/x^2]] = [[x^2 − ' + cc + '/x^2]].', yw: num(2 * m) };
+      dw: ['[[x^2 + ' + cc + '/x^2]]', '2x', '1 − [[' + cc + '/x]]'], deriv: 'Tagokra bontva: f(x) = x + [[' + cc + '/x]], f′(x) = 1 − [[' + cc + '/x^2]] = [[x^2 − ' + cc + '/x^2]].', de: 'Split into terms: f(x) = x + [[' + cc + '/x]], f′(x) = 1 − [[' + cc + '/x^2]] = [[x^2 − ' + cc + '/x^2]].', yw: num(2 * m) };
   }
   S.monoFam = monoFam;
-  function monoParts(F) {
+  S.mPlot = mPlot;
+  function monoParts(F, en) {
     var sgn = function (x) { return F.dj(x) > 0 ? 1 : -1; };
-    var mono = S.pieces(F.crit, F.breaks, sgn, null, ['↗', '↘']);
+    var mono = S.pieces(F.crit, F.breaks, sgn, null, ['↗', '↘'], null, en);
     var ext = [];
-    F.crit.forEach(function (x, i) { var l = sgn(x - 1e-4), rr = sgn(x + 1e-4); if (l !== rr) ext.push((l < 0 ? 'minimum' : 'maximum') + ': (' + xstr(x) + '; ' + F.ys[i] + ')'); });
-    return { mono: mono, ext: ext.length ? ext.join(', ') : 'nincs szélsőértéke' };
+    F.crit.forEach(function (x, i) { var l = sgn(x - 1e-4), rr = sgn(x + 1e-4); if (l !== rr) ext.push((l < 0 ? 'minimum' : 'maximum') + ': (' + xstr(x) + (en ? ', ' : '; ') + F.ys[i] + ')'); });
+    return { mono: mono, ext: ext.length ? ext.join(en ? '; ' : ', ') : (en ? 'no local extremum' : 'nincs szélsőértéke') };
   }
   S.monoParts = monoParts;
-  function signchart(F, order) {
+  function signchart(F, order, en) {
     var pts = F.crit.concat(F.breaks).sort(function (a, b) { return a - b; });
     var dj = order === 2 ? F.d2j : F.dj, cells = [], res = [], i;
     for (i = 0; i <= pts.length; i++) {
       var a = i === 0 ? pts[0] - 1 : pts[i - 1], b = i === pts.length ? pts[pts.length - 1] + 1 : pts[i], s = dj((a + b) / 2) > 0;
       cells.push(s ? '+' : '−'); res.push(order === 2 ? (s ? '∪' : '∩') : (s ? '↗' : '↘'));
-      if (i < pts.length) { var br = F.breaks.indexOf(pts[i]) >= 0; cells.push(br ? 'nincs' : '0'); res.push(br ? 'nincs' : (order === 2 ? 'infl.' : 'szélsőérték?')); }
+      if (i < pts.length) { var br = F.breaks.indexOf(pts[i]) >= 0; cells.push(br ? (en ? 'undef.' : 'nincs') : '0'); res.push(br ? (en ? 'undef.' : 'nincs') : (order === 2 ? 'infl.' : 'szélsőérték?')); }
     }
     for (i = 1; i < res.length; i += 2) if (res[i] === 'szélsőérték?') res[i] = res[i - 1] === res[i + 1] ? '–' : (res[i - 1] === '↘' ? 'min' : 'max');
     for (i = 1; i < res.length; i += 2) if (res[i] === 'infl.' && res[i - 1] === res[i + 1]) res[i] = '–';
-    return { type: 'signchart', pts: pts.map(function (x) { return xstr(x); }), rows: [{ label: order === 2 ? 'f″(x)' : 'f′(x)', cells: cells }], res: { label: 'f(x)', cells: res }, alt: 'Előjeltáblázat' };
+    return { type: 'signchart', pts: pts.map(function (x) { return xstr(x); }), rows: [{ label: order === 2 ? 'f″(x)' : 'f′(x)', cells: cells }], res: { label: 'f(x)', cells: res }, alt: en ? 'Sign chart' : 'Előjeltáblázat' };
   }
   S.signchart = signchart;
-  function mPlot(F) {
+  function mPlot(F, en) {
     var xs = F.crit.concat(F.breaks), lo = Math.min.apply(null, xs) - 2.5, hi = Math.max.apply(null, xs) + 2.5, ys = F.crit.map(F.fj).filter(isFinite);
     var ymin = Math.min.apply(null, ys.concat([0])) - 3, ymax = Math.max.apply(null, ys.concat([0])) + 3;
-    return S.plot([S.fx(F.fj)], lo, hi, Math.max(ymin, -12), Math.min(ymax, 12), { alt: 'Az f grafikonja', pts: F.crit.map(function (x, i) { return { x: x, y: F.fj(x), label: '(' + xstr(x) + '; ' + F.ys[i].replace(/\[\[(.*)\/(.*)\]\]/, '$1/$2') + ')', pos: 'b' }; }).filter(function (p) { return isFinite(p.y); }), segs: F.breaks.map(function (b) { return { x1: b, y1: -12, x2: b, y2: 12, cls: 'dash' }; }) });
+    return S.plot([S.fx(F.fj)], lo, hi, Math.max(ymin, -12), Math.min(ymax, 12), { alt: en ? 'Graph of f' : 'Az f grafikonja', pts: F.crit.map(function (x, i) { return { x: x, y: F.fj(x), label: '(' + xstr(x) + (en ? ', ' : '; ') + F.ys[i].replace(/\[\[(.*)\/(.*)\]\]/, '$1/$2') + ')', pos: 'b' }; }).filter(function (p) { return isFinite(p.y); }), segs: F.breaks.map(function (b) { return { x1: b, y1: -12, x2: b, y2: 12, cls: 'dash' }; }) });
   }
 
   topic(3, 'sze-monoton', 'Monotonitás és szélsőérték', ['sze-szorzat'], [
@@ -390,12 +391,12 @@
     return { t: 'recip', f: 'x + [[' + c + '/x]]', d2: '[[' + (2 * c) + '/x^3]]', fj: function (x) { return x + c / x; }, d2j: function (x) { return 2 * c / (x * x * x); }, crit: [], breaks: [0], ys: [], dw: ['−[[' + (2 * c) + '/x^3]]', '1 − [[' + c + '/x^2]]', '[[' + c + '/x^3]]'], yw: '0', d1: '1 − [[' + c + '/x^2]]' };
   }
   S.convFam = convFam;
-  function convParts(F) {
+  function convParts(F, en) {
     var sgn = function (x) { return F.d2j(x) > 0 ? 1 : -1; };
-    var conv = S.pieces(F.crit, F.breaks, sgn, null, ['konvex', 'konkáv']);
+    var conv = S.pieces(F.crit, F.breaks, sgn, null, en ? ['convex', 'concave'] : ['konvex', 'konkáv'], null, en);
     var inf = [];
-    F.crit.forEach(function (x, i) { if (sgn(x - 1e-4) !== sgn(x + 1e-4)) inf.push('(' + xstr(x) + '; ' + F.ys[i] + ')'); });
-    return { conv: conv, inf: inf.length ? inf.join(' és ') : 'nincs inflexiós pontja' };
+    F.crit.forEach(function (x, i) { if (sgn(x - 1e-4) !== sgn(x + 1e-4)) inf.push('(' + xstr(x) + (en ? ', ' : '; ') + F.ys[i] + ')'); });
+    return { conv: conv, inf: inf.length ? inf.join(en ? ' and ' : ' és ') : (en ? 'no inflection point' : 'nincs inflexiós pontja') };
   }
   S.convParts = convParts;
   topic(3, 'sze-konvex', 'Konvexitás és inflexiós pont', ['sze-monoton'], [
@@ -476,17 +477,17 @@
     return 'y = ' + S.join([mx, b.n === 0 && mx ? '' : S.ratf(b)]);
   }
   S.lineStr = lineStr;
-  function tanParts(F) {
+  function tanParts(F, en) {
     var pts = F.xs.slice().sort(function (a, b) { return a - b; });
-    var ptsS = pts.map(function (x) { return 'x = ' + num(x); }).join(' és ');
+    var ptsS = pts.map(function (x) { return 'x = ' + num(x); }).join(en ? ' and ' : ' és ');
     var lines = pts.map(function (x) { return lineStr(F.m, x, fr(Math.round(F.fj(x) * 1e6) / 1e6, 1)); });
-    return { pts: ptsS, eqs: lines.join(' és '), sorted: pts };
+    return { pts: ptsS, eqs: lines.join(en ? ' and ' : ' és '), sorted: pts };
   }
   S.tanParts = tanParts;
-  function tanFig(F) {
+  function tanFig(F, en) {
     var T = tanParts(F), lo = Math.min.apply(null, T.sorted) - 3, hi = Math.max.apply(null, T.sorted) + 3, ys = T.sorted.map(F.fj);
     var fns = [S.fx(F.fj)].concat(T.sorted.map(function (x) { var y0 = F.fj(x), m = S.val(F.m); return S.fx(function (t) { return m * (t - x) + y0; }, 'b'); }));
-    return S.plot(fns, lo, hi, Math.min.apply(null, ys) - 6, Math.max.apply(null, ys) + 6, { alt: 'Az f grafikonja és az érintők', pts: T.sorted.map(function (x) { return { x: x, y: F.fj(x), label: '(' + num(x) + '; ' + num(Math.round(F.fj(x) * 100) / 100) + ')', pos: 'r' }; }) });
+    return S.plot(fns, lo, hi, Math.min.apply(null, ys) - 6, Math.max.apply(null, ys) + 6, { alt: en ? 'Graph of f with the tangents' : 'Az f grafikonja és az érintők', pts: T.sorted.map(function (x) { return { x: x, y: F.fj(x), label: '(' + num(x) + (en ? ', ' : '; ') + num(Math.round(F.fj(x) * 100) / 100).replace(en ? ',' : '#', '.') + ')', pos: 'r' }; }) });
   }
   S.tanFig = tanFig;
   topic(4, 'sze-erinto', 'Érintő egyenlete adott meredekséggel', ['sze-lanc'], [

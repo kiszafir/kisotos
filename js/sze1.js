@@ -61,7 +61,7 @@
   };
   S.sg = function (b) { return b === 0 ? '' : (b < 0 ? ' − ' : ' + ') + Math.abs(b); };
   /* Intervallum: a „[[” elé keskeny szóköz kerül, hogy ne olvadjon össze a zárójellel. */
-  S.iv = function (lc, a, b, rc) { return (lc ? '[' : '(') + (lc && /^\[\[/.test(a) ? ' ' : '') + a + '; ' + b + (rc ? ']' : ')'); };
+  S.iv = function (lc, a, b, rc, en) { return (lc ? '[' : '(') + (lc && /^\[\[/.test(a) ? ' ' : '') + a + (en ? ', ' : '; ') + b + (rc ? ']' : ')'); };
   S.nz = function (r, lo, hi) { var v; do { v = r.int(lo, hi); } while (v === 0); return v; };
   S.W = function (v, err, fb) { return { v: v, err: err, fb: fb }; };
   S.uniq = function (list, ans) { var seen = {}; return list.filter(function (w) { if (!w || w.v === ans || seen[w.v]) return false; seen[w.v] = 1; return true; }); };
@@ -571,14 +571,15 @@
     if (sp.pass) pts.push({ x: sp.pass.q, y: sp.pass.c });
     return { type: 'plot', xmin: xmin, xmax: xmax, ymin: -7, ymax: 7, fns: [{ k: 'fx', f: f }], segs: segs, pts: pts, alt: alt || 'Grafikon' };
   };
-  S.limText = function (sp) {
-    var d = 'D_f = ℝ \\ {' + [sp.p].concat(sp.hole ? [sp.hole.q] : []).sort(function (a, b) { return a - b; }).map(num).join('; ') + '}';
-    var L = [d, 'lim (x → −∞) f(x) = ' + lv(sp.lm), 'lim (x → ' + num(sp.p) + ' − 0) f(x) = ' + lv(sp.pl), 'lim (x → ' + num(sp.p) + ' + 0) f(x) = ' + lv(sp.pr)];
+  S.limText = function (sp, en) {
+    var d = 'D_f = ℝ \\ {' + [sp.p].concat(sp.hole ? [sp.hole.q] : []).sort(function (a, b) { return a - b; }).map(num).join(en ? ', ' : '; ') + '}';
+    var L = [d, 'lim (x → −∞) f(x) = ' + lv(sp.lm), 'lim (x → ' + num(sp.p) + (en ? '^(−)' : ' − 0') + ') f(x) = ' + lv(sp.pl), 'lim (x → ' + num(sp.p) + (en ? '^(+)' : ' + 0') + ') f(x) = ' + lv(sp.pr)];
     if (sp.hole) L.splice(1, 0, 'lim (x → ' + num(sp.hole.q) + ') f(x) = ' + num(sp.hole.c));
     if (sp.pass) L.push('lim (x → ' + num(sp.pass.q) + ') f(x) = ' + num(sp.pass.c));
     L.push('lim (x → ∞) f(x) = ' + lv(sp.lp));
     return L;
   };
+  var KEYS_EN = { lm: 'the limit at −∞', pl: 'the limit on the left of the pole', pr: 'the limit on the right of the pole', lp: 'the limit at +∞', hole: 'the limit at the excluded point', pass: 'the limit at the given point' };
   var KEYS = { lm: 'a −∞-ben vett határérték', pl: 'a pólustól balra vett határérték', pr: 'a pólustól jobbra vett határérték', lp: 'a +∞-ben vett határérték', hole: 'a kizárt pontban vett határérték', pass: 'a megadott pontbeli határérték' };
   /* Egy feltétel elrontása (a hibás grafikonokhoz). */
   S.limBreak = function (sp, key, r) {
@@ -592,11 +593,11 @@
     var list = [{ sp: sp, ok: true, key: null }].concat(pick.map(function (k) { return { sp: S.limBreak(sp, k, r), ok: false, key: k }; }));
     return r.shuffle(list);
   };
-  S.limTask = function (sp, r) {
+  S.limTask = function (sp, r, en) {
     var c = S.limCands(sp, r), L = ['A', 'B', 'C', 'D'], ansI = 0;
     c.forEach(function (q, i) { if (q.ok) ansI = i; });
-    var fig = { type: 'multi', items: c.map(function (q, i) { return { label: L[i], fig: S.limFig(q.sp, L[i] + ' grafikon') }; }) };
-    var wr = c.map(function (q, i) { return q.ok ? null : W(L[i], 'kerdes-felreertes', 'A ' + L[i] + ' grafikonnál ' + KEYS[q.key] + ' nem egyezik a feltétellel.'); }).filter(Boolean);
+    var fig = { type: 'multi', items: c.map(function (q, i) { return { label: L[i], fig: S.limFig(q.sp, en ? 'Graph ' + L[i] : L[i] + ' grafikon') }; }) };
+    var wr = c.map(function (q, i) { return q.ok ? null : W(L[i], 'kerdes-felreertes', en ? 'In graph ' + L[i] + ', ' + KEYS_EN[q.key] + ' does not match the condition.' : 'A ' + L[i] + ' grafikonnál ' + KEYS[q.key] + ' nem egyezik a feltétellel.'); }).filter(Boolean);
     return { fig: fig, answer: L[ansI], wrongs: wr, cands: c.map(function (q) { return q.sp; }) };
   };
   topic(1, 'sze-abrazolas', 'Függvény ábrázolása határértékekből', ['sze-egyoldali'], [

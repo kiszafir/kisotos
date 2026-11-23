@@ -18,6 +18,7 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 | Telefonon alsó menüs app-nézet, 900 képpont felett asztali nézet oldalsó menüvel | kész |
 | 521 téma leckével, 590 feladatgenerátor (minden feladat új számokkal jön) | kész |
 | SZE Matek 1 vizsga (Győr, MSTM001) külön menüpontban: 24 részletes lecke a három mintavizsga anyagából, 33 feladattípus, a három mintavizsga teljes megoldással, és mindig új gyakorló vizsga (100 pont, 8 feladat, pontozással és lépésenkénti megoldással) | kész |
+| Az SZE vizsgafelkészítő teljes angol változata (angol nyelvű képzésekhez): mind a 24 lecke, 33 feladattípus, a három mintavizsga és a gyakorló vizsga angolul, angol jelöléssel (tizedespont, [a, b] intervallum, (x, y) pont); nyelvváltó a hubon, és külön „SZE exam (English)” profil angol felülettel | kész |
 | Ábrák: 254 feladattípusnál rajz a feladat mellett vagy a megoldás után, 210 leckében szemléltető ábra (előjeltábla, értéktáblázat, több grafikon egymás mellett, síkidomok, testek, függvénygrafikonok, számegyenes, Venn-diagram, oszlop- és kördiagram, analóg óra, dobozábra, súlyozott gráf, egységkör, haranggörbe, pöttyös tömb, kockatáblázat, prímtényezős létra, lépcsős sűrűségfüggvény, szögmérő, út–idő grafikon, szakadásos függvény, hőmérő, szimmetriatengelyek, empirikus eloszlásfüggvény) | kész |
 | Telepíthető webapp (kezdőképernyőre tehető, net nélkül is megy), ha https címről fut | kész |
 | Javítás hibatípus szerint (100 nevesített hibatípus), háromlépcsős tipp, lépésenkénti megoldás | kész |
@@ -29,7 +30,7 @@ A betűtípusok a Google Fonts oldaláról töltődnek be. Net nélkül az app a
 
 ### Témák
 
-Nyolc ösvény van: alsó tagozat (81 téma), felső tagozat (96), középszintű érettségi (106), emelt szintű érettségi (53), egyetemi matek 1 (57), egyetemi matek 2 (52), egyetemi matek 3 (52), SZE Matek 1 vizsga (24). Az SZE vizsgafelkészítő a profiltól függetlenül is elérhető az alsó menü „SZE vizsga” fülén. Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. Ugyanitt név szerint keresni lehet a témák között (ékezet nélkül is), és minden témakörből indítható vegyes gyakorlás, amely a témakör több témájából ad egy-egy feladatot. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
+Nyolc ösvény van: alsó tagozat (81 téma), felső tagozat (96), középszintű érettségi (106), emelt szintű érettségi (53), egyetemi matek 1 (57), egyetemi matek 2 (52), egyetemi matek 3 (52), SZE Matek 1 vizsga (24), ugyanez angolul (24). Az SZE vizsgafelkészítő a profiltól függetlenül is elérhető az alsó menü „SZE vizsga” fülén. Minden ösvény 6–9 témakörre van bontva (például Törtek, Geometria, Integrálszámítás), az Ösvény képernyőn ezek nyithatók-csukhatók. Ugyanitt név szerint keresni lehet a témák között (ékezet nélkül is), és minden témakörből indítható vegyes gyakorlás, amely a témakör több témájából ad egy-egy feladatot. A bővítés a `TANTERV.md` listáját követi; annak a nagyobb része még hátravan.
 
 - **Alsó tagozat:** összeadás és kivonás tízig, kétjegyű számok összeadása, pótlás tízre, összeadás és kivonás tízes átlépéssel, szorzótábla, osztás, kerekítés tízesre, téglalap kerülete, páros és páratlan számok, felezés és kétszerezés, szöveges feladatok, számok összehasonlítása, számsorozatok, kétjegyű kivonás, maradékos osztás, szorzás kerek tízesekkel, tízesek és egyesek, hiányzó tényező, óra és perc, négyzet, kerek százasok
 - **Felső tagozat:** legnagyobb közös osztó, terület, műveleti sorrend, helyettesítési érték, törtek bővítése, közös nevező, törtek összeadása, kivonása, szorzása, osztása, negatív számok, százalékszámítás, elsőfokú egyenlet, arányos osztás, hatványozás, tizedes törtek összeadása, mértékegységek, százalékalap, zárójelfelbontás, prímszámok, mennyiség törtrésze, átlag, egyenes arányosság, háromszög szögei, zárójeles egyenlet, tizedes törtek szorzása 10-zel és 100-zal, koordináta-rendszer, kocka, leárazás, Pitagorasz-tétel
@@ -92,6 +93,7 @@ js/sze1.js        SZE Matek 1 vizsga: ösvény, közös segédek, 1. (függvény
 js/sze2.js        SZE: 3. (deriválás), 4. (függvényvizsgálat), 5. (érintő, Taylor, numerikus deriválás) feladat
 js/sze3.js        SZE: 6. (integrálás), 7. (integrálási módszerek), 8. (terület, forgástest, numerikus integrálás) feladat
 js/sze4.js        SZE: az A, B, C mintavizsga teljes megoldással, a gyakorló vizsga összeállítása és pontozása
+js/szeen1-4.js    SZE angol változat: ugyanaz a 8 feladat leckéi, generátorai és a mintavizsgák angolul (sze1en ösvény)
 TANTERV.md        a bővítés útiterve (a teljes témalista)
 sw.js, manifest.webmanifest, icon.svg   telepíthető webapp
 js/figures.js     matek-jelölés és kódból rajzolt ábrák

@@ -11,8 +11,8 @@ function tokenize(s) {
     if (/\s/.test(c)) { i++; continue; }
     if (s.substr(i, 2) === '[[') { out.push('[['); i += 2; continue; }
     if (s.substr(i, 2) === ']]') { out.push(']]'); i += 2; continue; }
-    if (/[0-9]/.test(c)) { var m = s.slice(i).match(/^\d+(,\d+)?/)[0]; out.push({ n: parseFloat(m.replace(',', '.')) }); i += m.length; continue; }
-    var w = s.slice(i).match(/^(arcsin|arccos|arctg|ctg|tg|sin|cos|ln|log|sh|ch)/);
+    if (/[0-9]/.test(c)) { var m = s.slice(i).match(/^\d+([.,]\d+)?/)[0]; out.push({ n: parseFloat(m.replace(',', '.')) }); i += m.length; continue; }
+    var w = s.slice(i).match(/^(arcsin|arccos|arctan|arctg|cot|ctg|tan|tg|sin|cos|ln|log|sh|ch)/);
     if (w) { out.push({ f: w[0] }); i += w[0].length; continue; }
     if (/[a-zA-Zπe∞]/.test(c)) { out.push({ v: c }); i++; continue; }
     out.push(c); i++;
@@ -20,10 +20,10 @@ function tokenize(s) {
   return out;
 }
 var FN = {
-  sin: Math.sin, cos: Math.cos, tg: Math.tan, ctg: function (u) { return 1 / Math.tan(u); },
+  sin: Math.sin, cos: Math.cos, tg: Math.tan, tan: Math.tan, ctg: function (u) { return 1 / Math.tan(u); }, cot: function (u) { return 1 / Math.tan(u); },
   arcsin: function (u) { return Math.abs(u) > 1 && Math.abs(u) < 1 + TINY ? Math.asin(Math.sign(u)) : Math.asin(u); },
   arccos: function (u) { return Math.abs(u) > 1 && Math.abs(u) < 1 + TINY ? Math.acos(Math.sign(u)) : Math.acos(u); },
-  arctg: Math.atan, ln: function (u) { return u <= TINY ? NaN : Math.log(u); }, sh: Math.sinh, ch: Math.cosh
+  arctg: Math.atan, arctan: Math.atan, ln: function (u) { return u <= TINY ? NaN : Math.log(u); }, sh: Math.sinh, ch: Math.cosh
 };
 function parse(str) {
   var T = tokenize(str), p = 0, noDiv = 0, absD = 0;
@@ -134,15 +134,15 @@ function setOf(str) {
   var s = String(str).trim();
   if (s === 'ℝ') return function () { return true; };
   var m = s.match(/^ℝ \\ \{(.*)\}$/);
-  if (m) { var pts = m[1].split(';').map(function (q) { return value(q); }); return function (x) { return pts.every(function (q) { return Math.abs(x - q) > 1e-12; }); }; }
+  if (m) { var pts = m[1].split(/;|, /).map(function (q) { return value(q); }); return function (x) { return pts.every(function (q) { return Math.abs(x - q) > 1e-12; }); }; }
   var parts = s.split(' ∪ ').map(function (iv) {
-    var mm = iv.trim().match(/^([\[(])\s*(.+);\s*(.+?)\s*([\])])$/);
+    var mm = iv.trim().match(/^([\[(])\s*(.+?)(?:;|, )\s*(.+?)\s*([\])])$/);
     if (!mm) throw new Error('Rossz intervallum: ' + iv);
     return { lc: mm[1] === '[', a: value(mm[2]), b: value(mm[3]), rc: mm[4] === ']' };
   });
   return function (x) { return parts.some(function (q) { return (q.lc ? x >= q.a - 1e-12 : x > q.a + 1e-12) && (q.rc ? x <= q.b + 1e-12 : x < q.b - 1e-12); }); };
 }
-function setEnds(str) { return (String(str).match(/[−-]?\d+(,\d+)?|[−-]?\[\[[^\]]+\]\]|[−-]?√\(\d+\)/g) || []).map(function (q) { try { return value(q); } catch (e) { return null; } }).filter(function (v) { return v !== null && isFinite(v); }); }
+function setEnds(str) { return (String(str).match(/[−-]?\d+([.,]\d+)?|[−-]?\[\[[^\]]+\]\]|[−-]?√\(\d+\)/g) || []).map(function (q) { try { return value(q); } catch (e) { return null; } }).filter(function (v) { return v !== null && isFinite(v); }); }
 
 function d1(f, x, h) { h = h || 1e-5; return (f(x + h) - f(x - h)) / (2 * h); }
 function d2(f, x, h) { h = h || 1e-4; return (f(x + h) - 2 * f(x) + f(x - h)) / (h * h); }

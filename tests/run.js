@@ -4,7 +4,7 @@
    3) Böngésző nélkül végigjárjuk a képernyőket mindhárom hangulatban. */
 'use strict';
 var path = require('path');
-['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'content34', 'figures4', 'sze1', 'sze2', 'sze3', 'sze4', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
+['core', 'content', 'figures', 'figures2', 'content2', 'content3', 'content4', 'content5', 'content6', 'content7', 'content8', 'content9', 'content10', 'content11', 'content12', 'content13', 'content14', 'content15', 'content16', 'content17', 'content18', 'content19', 'content20', 'content21', 'content22', 'content23', 'figures3', 'content24', 'content25', 'content26', 'content27', 'content28', 'content29', 'content30', 'content31', 'content32', 'content33', 'content34', 'figures4', 'sze1', 'sze2', 'sze3', 'sze4', 'szeen1', 'szeen2', 'szeen3', 'szeen4', 'app'].forEach(function (f) { require(path.join(__dirname, '..', 'js', f + '.js')); });
 var KO = globalThis.KO, fails = 0, checks = 0;
 function ok(cond, msg) { checks++; if (!cond) { fails++; if (fails <= 25) console.log('HIBA: ' + msg); } }
 function g(a, b) { while (b) { var t = a % b; a = b; b = t; } return Math.abs(a); }
@@ -1037,7 +1037,7 @@ Object.keys(KO.gens).filter(function (id) { return !process.env.KO_ONLY || proce
       t.wrongs.forEach(function (w) { ok(w.v.d > 0 && w.v.n >= 0, tag + 'érvénytelen tört a hibás válaszok között'); });
     }
     var all = [t.prompt, t.math || '', t.solution].concat(t.tips, t.wrongs.map(function (w) { return w.fb; }), t.wrongs.map(function (w) { return KO.show(w.v, t.vtype); })).join(' | ');
-    ok(!/undefined|NaN|(^|[^a-záéíóöőúüű])null([^a-záéíóöőúüű]|$)|\[object|--|\+ −|− −|\d\.\d/.test(all), tag + 'hibás szöveg: ' + all.slice(0, 160));
+    ok(!(KO.gens[id].topic.indexOf('szeen-') === 0 ? /undefined|NaN|(^|[^a-z])null([^a-z]|$)|\[object|--|\+ −|− −|\d,\d/ : /undefined|NaN|(^|[^a-záéíóöőúüű])null([^a-záéíóöőúüű]|$)|\[object|--|\+ −|− −|\d\.\d/).test(all), tag + 'hibás szöveg: ' + all.slice(0, 160));
     var html = KO.math(all) + KO.figure(t.fig) + KO.figure(t.solfig);
     ok(html.indexOf('[[') < 0 && !/undefined|NaN|Infinity/.test(html), tag + 'a megjelenítés hibás');
     if (t.fig) ok(KO.figure(t.fig).length > 80, tag + 'üres ábra');
@@ -1139,8 +1139,8 @@ Object.keys(KO.tracks).forEach(function (trk) {
   var firstName = KO.topics[KO.tracks[trk].ids[0]].name, word = firstName.split(/[ ,:]/)[0].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   A.ui.fields = { q: word }; A.act('keres');
   var hs = view(trk + ' keresés');
-  ok(hs.indexOf('Találatok') >= 0 && hs.indexOf('class="hit"') >= 0, trk + ': a keresés ékezet nélkül is talál (' + word + ')');
-  A.ui.fields = { q: 'xqzw' }; A.act('keres'); ok(view(trk + ' üres keresés').indexOf('Nincs ilyen nevű téma') >= 0, trk + ': üres találat jelezve');
+  ok((hs.indexOf('Találatok') >= 0 || hs.indexOf('Results') >= 0) && hs.indexOf('class="hit"') >= 0, trk + ': a keresés ékezet nélkül is talál (' + word + ')');
+  A.ui.fields = { q: 'xqzw' }; A.act('keres'); ok(/Nincs ilyen nevű téma|No topic with this name/.test(view(trk + ' üres keresés')), trk + ': üres találat jelezve');
   A.act('keres-torol'); ok(view(trk + ' keresés törölve').indexOf('Találatok') < 0, trk + ': a keresés törölhető');
   /* Vegyes gyakorlás: minden témakörből indítható, végigvihető, és az érintett témákat ütemezi. */
   grs.forEach(function (g, gi) {
@@ -1168,7 +1168,7 @@ Object.keys(KO.tracks).forEach(function (trk) {
   KO.tracks[trk].ids.forEach(function (id, n) {
     A.act('lecke', id); view(trk + ' lecke ' + id);
     for (var ds = 0; ds < 3; ds++) { A.act('demo-lep'); view(trk + ' lecke-példa ' + id); }
-    ok(/Gyakori hiba/.test(A.view()), id + ': a lecke végén megjelenik a gyakori hiba');
+    ok(/Gyakori hiba|Common mistake/.test(A.view()), id + ': a lecke végén megjelenik a gyakori hiba');
     A.act('demo-uj'); ok(A.ui.demo.step === 0, id + ': új példa az elejéről indul'); view(trk + ' lecke-új példa ' + id);
     for (var round = 0; round < 3; round++) {
       A.act('gyak', id);
