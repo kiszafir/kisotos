@@ -1123,6 +1123,7 @@ Object.keys(KO.tracks).forEach(function (trk) {
   view(trk + ' kezdés');
   A.act('profil', trk);
   ['ma', 'osveny', 'sze', 'terkep', 'beall'].forEach(function (s) { A.act('nav', s); view(trk + ' ' + s); });
+  ok((A.view().indexOf('data-act="nav" data-arg="sze"') >= 0) === /^sze1/.test(trk), trk + ': az SZE vizsga fül csak az SZE profilnál látszik');
   var grs = KO.tracks[trk].groups, cover = {};
   ok(grs && grs.length >= 5, trk + ': legalább öt témakör');
   grs.forEach(function (g) { ok(g.ids.length >= 2, trk + ' / ' + g.name + ': legalább két téma'); g.ids.forEach(function (id) { ok(!cover[id], id + ': csak egy témakörben szerepel'); cover[id] = 1; }); });

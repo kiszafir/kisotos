@@ -430,7 +430,9 @@
     h += '<main class="main scr-' + ui.screen + '" id="main">' + V[ui.screen]() + '</main>';
     if (S.profile) {
       var tabs = isEn() ? [['ma', 'Today', 'home'], ['osveny', 'Path', 'path'], ['sze', 'SZE exam', 'exam'], ['terkep', 'Knowledge map', 'grid'], ['beall', 'Settings', 'set']] : [['ma', 'Ma', 'home'], ['osveny', 'Ösvény', 'path'], ['sze', 'SZE vizsga', 'exam'], ['terkep', 'Tudástérkép', 'grid'], ['beall', 'Beállítások', 'set']];
-      h += '<nav class="nav" aria-label="' + U('Fő menü', 'Main menu') + '">' + tabs.map(function (t) {
+      var szeProf = !!(A.S.profile && /^sze1/.test(A.S.profile.track));
+      if (!szeProf) tabs = tabs.filter(function (t) { return t[0] !== 'sze'; });
+      h += '<nav class="nav n' + tabs.length + '" aria-label="' + U('Fő menü', 'Main menu') + '">' + tabs.map(function (t) {
         var cur = ui.screen === t[0] || (t[0] === 'sze' && ui.screen === 'vizsga');
         return '<button type="button" class="tab' + (cur ? ' cur' : '') + '" data-act="nav" data-arg="' + t[0] + '"' + (cur ? ' aria-current="page"' : '') + '>' + icon(t[2], 22) + '<span>' + t[1] + '</span></button>';
       }).join('') + '</nav>';

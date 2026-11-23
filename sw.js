@@ -1,5 +1,5 @@
 /* Kisötös – offline működés: az app saját fájljait eltárolja, és net nélkül onnan szolgálja ki. */
-var CACHE = 'kisotos-v36';
+var CACHE = 'kisotos-v37';
 var FILES = ['./', 'index.html', 'css/app.css', 'js/core.js', 'js/content.js', 'js/figures.js', 'js/figures2.js', 'js/figures3.js', 'js/figures4.js', 'js/content2.js', 'js/content3.js', 'js/content4.js', 'js/content5.js', 'js/content6.js', 'js/content7.js', 'js/content8.js', 'js/content9.js', 'js/content10.js', 'js/content11.js', 'js/content12.js', 'js/content13.js', 'js/content14.js', 'js/content15.js', 'js/content16.js', 'js/content17.js', 'js/content18.js', 'js/content19.js', 'js/content20.js', 'js/content21.js', 'js/content22.js', 'js/content23.js', 'js/content24.js', 'js/content25.js', 'js/content26.js', 'js/content27.js', 'js/content28.js', 'js/content29.js', 'js/content30.js', 'js/content31.js', 'js/content32.js', 'js/content33.js', 'js/content34.js', 'js/sze1.js', 'js/sze2.js', 'js/sze3.js', 'js/sze4.js', 'js/szeen1.js', 'js/szeen2.js', 'js/szeen3.js', 'js/szeen4.js', 'js/app.js', 'icon.svg', 'manifest.webmanifest'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) {
